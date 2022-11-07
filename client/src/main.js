@@ -4,7 +4,7 @@ import { load, drawMap, updateMap, updatePlayer } from "./map-rendering.js";
 
 var config = {
     type: Phaser.AUTO,
-    width: 500,
+    width: 1000,
     height: 500,
     fps: {
         target: 30,
@@ -36,6 +36,10 @@ var playerObject;
 var game = new Phaser.Game(config);
 var cursors;
 
+// UI Elements
+var timer_bar = document.getElementById("timer-bar");
+var cur_width = timer_bar.style.width;
+
 function preload() {
     load(this);
 }
@@ -52,6 +56,10 @@ function create() {
 
 function update(time, delta) {
     map_array[0][0].state = 1;
+    map_array[9][9].state = 1;
+
+    timer_bar.style.width = parseInt(cur_width) - 1 + "px";
+    cur_width = timer_bar.style.width;
 
     // accept input and send it to server
     if (cursors.left.isDown) {
