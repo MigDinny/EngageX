@@ -95,13 +95,21 @@ function update(time, delta) {
 
     // accept input and send it to server
     if (cursors.left.isDown) {
-        playerPosition[0] = playerPosition[0] - 1 
+        if(playerPosition[0] - 1 >=0){
+            playerPosition[0] = playerPosition[0] - 1 
+        }
     } else if (cursors.right.isDown) {
-        playerPosition[0] = playerPosition[0] + 1
+        if(playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_X){
+            playerPosition[0] = playerPosition[0] + 1
+        }
     } else if (cursors.up.isDown) {
-        playerPosition[1] = playerPosition[1] - 1 
+        if(playerPosition[1] - 1 >=0){
+            playerPosition[1] = playerPosition[1] - 1 
+        }
     } else if (cursors.down.isDown) {
-        playerPosition[1] = playerPosition[1] + 1
+        if(playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_Y){
+            playerPosition[1] = playerPosition[1] + 1
+        }
     }
 
     
