@@ -22,27 +22,37 @@ export const drawMap = (c, map) => {
             var tmp_obj = c.add
                 .image(line * 50, col * 50, "grass-block")
                 .setOrigin(0);
-            tmp_obj.state = 0;
+            tmp_obj.state = 1;
             map[line][col] = tmp_obj;
         }
     }
 };
 
-export const updateMap = (c, map) => {
+// Updates map. Also lights up squares that are adjacent to user
+export const updateMap = (c, map_array, playerPosition) => {
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_X; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_Y; col++) {
-            switch (map[line][col].state) {
+            if (
+                playerPosition[0] - line <= 1 &&
+                playerPosition[0] - line >= -1 &&
+                playerPosition[1] - col <= 1 &&
+                playerPosition[1] - col >= -1
+            )
+                map_array[line][col].state = 0;
+            else map_array[line][col].state = 1;
+            switch (map_array[line][col].state) {
                 case 0:
-                    map[line][col].setTexture("grass-block");
+                    map_array[line][col].setTexture("grass-block");
                     break;
                 case 1:
-                    map[line][col].setTexture("grass-block-no-vision");
+                    map_array[line][col].setTexture("grass-block-no-vision");
                     break;
             }
         }
     }
 };
 
+// updates player on the map based on player position
 export const updatePlayer = (c, playerPosition, playerObject) => {
     playerObject.x = playerPosition[0] * 50 + 8;
     playerObject.y = playerPosition[1] * 50 - 2;
