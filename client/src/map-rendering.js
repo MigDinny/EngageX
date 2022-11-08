@@ -28,14 +28,19 @@ export const drawMap = (c, map) => {
     }
 };
 
-
-
-/*export const updateMap = (c, map_array, playerPosition) => {
+// Updates map. Also lights up squares that are adjacent to user
+export const updateMap = (c, map_array, playerPosition) => {
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_X; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_Y; col++) {
-            if(playerPosition[0] - line <= 1 && playerPosition[0] - line >= -1 && playerPosition[1] - col <= 1 && playerPosition[1] - col >=-1) map_array[line][col].state = 0;
-            else map_array[line][col].state = 1
-            switch (map_array[line][col].state) {    
+            if (
+                playerPosition[0] - line <= 1 &&
+                playerPosition[0] - line >= -1 &&
+                playerPosition[1] - col <= 1 &&
+                playerPosition[1] - col >= -1
+            )
+                map_array[line][col].state = 0;
+            else map_array[line][col].state = 1;
+            switch (map_array[line][col].state) {
                 case 0:
                     map_array[line][col].setTexture("grass-block");
                     break;
@@ -45,9 +50,9 @@ export const drawMap = (c, map) => {
             }
         }
     }
-};*/
+};
 
-
+// updates player on the map based on player position
 export const updatePlayer = (c, playerPosition, playerObject) => {
     playerObject.x = playerPosition[0] * 50 + 8;
     playerObject.y = playerPosition[1] * 50 - 2;
