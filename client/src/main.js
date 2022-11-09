@@ -41,11 +41,19 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_Y), (_) =>
 var playerPosition = [0, 0];
 var playerObject;
 
+var music;
+
 var game = new Phaser.Game(config);
 var leftKey;
 var rightKey;
 var upKey;
 var downKey;
+
+var muteKey;
+var bpm;
+var timerMovement;
+var incrementTimer;
+var cursors;
 
 // UI Elements
 var timer_bar = document.getElementById("timer-bar");
@@ -60,16 +68,26 @@ function preload() {
     });
 
 
+    this.load.audio("game_music", ["audio/Kevin_MacLeod___One-eyed_Maestro.mp3", "audio/Kevin_MacLeod___One-eyed_Maestro.ogg"]);
+    
     load(this);
 }
 
 function create() {
-
-
+    
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
+
+    music = this.sound.add("game_music")
+    music.play(muteKey, 1, true);
+    music.setVolume(0.5);   // change with config
+    bpm = 102
+    timerMovement = 0;
+    incrementTimer = 60 * 1000 / bpm;
 
     drawMap(this, map_array);
 
@@ -99,7 +117,6 @@ function create() {
         frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
         repeat: 0,
     });
-
     
     playerObject.play("idle")
 }
@@ -119,42 +136,54 @@ function update(time, delta) {
     cur_width = timer_bar.style.width;
 
     // accept input and send it to server
+    if(timerMovement + incrementTimer < time) {
+        timerMovement = time;
+        cursors = this.input.keyboard.createCursorKeys();
 
-    if (Phaser.Input.Keyboard.JustDown(leftKey)) {
-        if (playerPosition[0] - 1 >= 0) {
-            playerPosition[0] = playerPosition[0] - 1;
-            
-            //Pause needs to be here to cancel old animations
-            playerObject.anims.pause();
-            playerObject.anims.play('horizontal').chain('idle');
+        if (cursors.left.isDown) {
+            if (playerPosition[0] - 1 >= 0) {
+                playerPosition[0] = playerPosition[0] - 1;
+                
+                //Pause needs to be here to cancel old animations
+                playerObject.anims.pause();
+                playerObject.anims.play('horizontal').chain('idle');
+            }
+        } else if (cursors.right.isDown) {          // Phaser.Input.Keyboard.JustDown(rightKey)
+            if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_X) {
+                playerPosition[0] = playerPosition[0] + 1;
+               
+                playerObject.anims.pause();
+                playerObject.anims.play("horizontal").chain("idle");
+    
+    
+            }
+        } else if (cursors.up.isDown) {
+            if (playerPosition[1] - 1 >= 0) {
+                playerPosition[1] = playerPosition[1] - 1;
+                
+                playerObject.anims.pause();
+                playerObject.play('vertical').chain('idle');
+            }
+        } else if (cursors.down.isDown) {
+            if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_Y) {
+                playerPosition[1] = playerPosition[1] + 1;
+                
+                
+                playerObject.anims.pause();
+                playerObject.anims.play('vertical').chain('idle');
+            }
         }
-    } else if (Phaser.Input.Keyboard.JustDown(rightKey)) {
-        if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_X) {
-            playerPosition[0] = playerPosition[0] + 1;
-           
-            playerObject.anims.pause();
-            playerObject.anims.play("horizontal").chain("idle");
+    }
+    
 
+    
 
+    if (Phaser.Input.Keyboard.JustDown(muteKey)) {
+        if (music.isPlaying) {
+            music.pause();
+        } else {
+            music.resume();
         }
-    } else if (Phaser.Input.Keyboard.JustDown(upKey)) {
-        if (playerPosition[1] - 1 >= 0) {
-            playerPosition[1] = playerPosition[1] - 1;
-            
-            playerObject.anims.pause();
-            playerObject.play('vertical').chain('idle');
-        }
-    } else if (Phaser.Input.Keyboard.JustDown(downKey)) {
-        if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_Y) {
-            playerPosition[1] = playerPosition[1] + 1;
-            
-            
-            playerObject.anims.pause();
-            playerObject.anims.play('vertical').chain('idle');
-        }
-
-        
-
     }
 
     // update map according to map_array
