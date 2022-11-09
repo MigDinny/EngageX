@@ -8,15 +8,16 @@ var config = {
 
     pixelArt: true,
     scale: {
+        parent: "game_parent",
         mode: Phaser.Scale.FIT,
-        width: 300,
-        height: 300
+        width: constants.BLOCK_SIZE_X * constants.MAP_NUMBER_BLOCKS_WIDTH,
+        height: constants.BLOCK_SIZE_Y * constants.MAP_NUMBER_BLOCKS_HEIGHT,
     },
 
     fps: {
         target: 30,
     },
-    
+
     physics: {
         default: "arcade",
         arcade: {
@@ -33,8 +34,8 @@ var config = {
 
 // 10x10 array representing the grid map
 // contains reference to image object. state: 0 -> normal grass, 1 -> no vision grass, ...
-var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_Y), (_) =>
-    Array(constants.MAP_NUMBER_BLOCKS_X).fill(0)
+var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
+    Array(constants.MAP_NUMBER_BLOCKS_WIDTH).fill(0)
 );
 
 // player position X, Y coord in 10x10 grid
@@ -48,8 +49,8 @@ var leftKey;
 var rightKey;
 var upKey;
 var downKey;
-
 var muteKey;
+
 var bpm;
 var timerMovement;
 var incrementTimer;
@@ -74,12 +75,13 @@ function preload() {
 }
 
 function create() {
-    
+
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
 
     drawMap(this, map_array);
 
@@ -87,24 +89,26 @@ function create() {
         .sprite(playerPosition[0] * 16 - 8, playerPosition[1] * 16 - 8, "slime")
         .setOrigin(0, 0);
 
-    playerObject.setScale(1,1);
+    playerObject.setScale(constants.SCALE);
     this.anims.create({
-        key: 'idle',
-            
+        key: "idle",
         frameRate: 10,
         frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 3 }),
         repeat: -1,
     });
     this.anims.create({
-        key: 'vertical',
-            
+        key: "vertical",
         frameRate: 10,
-        frames: this.anims.generateFrameNumbers("slime", { start: 15, end: 20 }),
+        frames: this.anims.generateFrameNumbers("slime", {
+            start: 15,
+            end: 20,
+        }),
         repeat: 0,
     });
+    
     this.anims.create({
-        key: 'horizontal',
-            
+        key: "horizontal",
+
         frameRate: 10,
         frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
         repeat: 0,
@@ -121,9 +125,6 @@ function create() {
 }
 
 function update(time, delta) {
-    map_array[0][0].state = 1;
-    map_array[9][9].state = 1;
-
     // Updates timer size
     var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
     timer_bar.style.width = new_width + "px";
@@ -185,4 +186,7 @@ function update(time, delta) {
 
     // update player according to its position
     updatePlayer(this, playerPosition, playerObject);
+
+    map_array[0][0].state = 1;
+    map_array[9][9].state = 1;
 }
