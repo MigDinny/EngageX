@@ -7,7 +7,6 @@ var config = {
     type: Phaser.AUTO,
     pixelArt: true,
     scale: {
-        parent: 'yourgamediv',
         mode: Phaser.Scale.FIT,
         width: 300,
         height: 300
