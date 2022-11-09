@@ -81,14 +81,6 @@ function create() {
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
-
-    music = this.sound.add("game_music")
-    music.play(muteKey, 1, true);
-    music.setVolume(0.5);   // change with config
-    bpm = 102
-    timerMovement = 0;
-    incrementTimer = 60 * 1000 / bpm;
-
     drawMap(this, map_array);
 
     playerObject = this.physics.add
@@ -118,7 +110,14 @@ function create() {
         repeat: 0,
     });
     
-    playerObject.play("idle")
+    playerObject.play("idle");
+
+    music = this.sound.add("game_music")
+    music.play(muteKey, 1, true);
+    music.setVolume(0.5);   // change with config
+    bpm = 102
+    timerMovement = 0;
+    incrementTimer = 60 * 1000 / bpm;
 }
 
 function update(time, delta) {
@@ -137,7 +136,7 @@ function update(time, delta) {
 
     // accept input and send it to server
     if(timerMovement + incrementTimer < time) {
-        timerMovement = time;
+        timerMovement += incrementTimer;
         cursors = this.input.keyboard.createCursorKeys();
 
         if (cursors.left.isDown) {
