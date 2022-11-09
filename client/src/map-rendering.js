@@ -24,7 +24,7 @@ export const drawMap = (c, map) => {
                     "grass-block"
                 )
                 .setOrigin(0, 0)
-                .setScale(2);
+                .setScale(constants.SCALE);
             tmp_obj.state = 1;
             map[line][col] = tmp_obj;
         }
@@ -33,7 +33,6 @@ export const drawMap = (c, map) => {
 
 // Updates map. Also lights up squares that are adjacent to user
 export const updateMap = (c, map_array, playerPosition) => {
-    console.log(map_array);
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_HEIGHT; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_WIDTH; col++) {
             if (

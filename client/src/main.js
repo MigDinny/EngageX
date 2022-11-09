@@ -8,7 +8,8 @@ var config = {
 
     pixelArt: true,
     scale: {
-        // mode: Phaser.Scale.FIT,
+        parent: "game_parent",
+        mode: Phaser.Scale.FIT,
         width: constants.BLOCK_SIZE_X * constants.MAP_NUMBER_BLOCKS_WIDTH,
         height: constants.BLOCK_SIZE_Y * constants.MAP_NUMBER_BLOCKS_HEIGHT,
     },
@@ -68,7 +69,7 @@ function create() {
         .sprite(playerPosition[0] * 16 - 8, playerPosition[1] * 16 - 8, "slime")
         .setOrigin(0, 0);
 
-    playerObject.setScale(2, 2);
+    playerObject.setScale(constants.SCALE);
     this.anims.create({
         key: "idle",
 
