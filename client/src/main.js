@@ -5,11 +5,17 @@ import { load, drawMap, updatePlayer, updateMap } from "./map-rendering.js";
 
 var config = {
     type: Phaser.AUTO,
-    width: 750,
-    height: 750,
+    pixelArt: true,
+    scale: {
+        parent: 'yourgamediv',
+        mode: Phaser.Scale.FIT,
+        width: 300,
+        height: 300
+    },
     fps: {
         target: 30,
     },
+    
     physics: {
         default: "arcade",
         arcade: {
@@ -36,6 +42,10 @@ var playerObject;
 
 var game = new Phaser.Game(config);
 var cursors;
+var leftKey;
+var rightKey;
+var upKey;
+var downKey;
 
 // UI Elements
 var timer_bar = document.getElementById("timer-bar");
@@ -43,16 +53,55 @@ var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
 
 function preload() {
+    this.load.spritesheet("slime", "img/slimeblue.png",
+    {
+        frameWidth:32,
+        frameHeight: 32,
+    });
+
+
     load(this);
 }
 
 function create() {
+
+
+    leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+    rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+    upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+
     drawMap(this, map_array);
 
     playerObject = this.physics.add
-        .sprite(playerPosition[0] * 50 + 8, playerPosition[1] * 50 - 2, "dude")
+        .sprite(playerPosition[0] * 16 - 16, playerPosition[1] * 16 - 16, "slime")
         .setOrigin(0, 0);
 
+    playerObject.setScale(1,1);
+    this.anims.create({
+        key: 'idle',
+            
+        frameRate: 10,
+        frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 3 }),
+        repeat: -1,
+    });
+    this.anims.create({
+        key: 'vertical',
+            
+        frameRate: 10,
+        frames: this.anims.generateFrameNumbers("slime", { start: 15, end: 20 }),
+        repeat: 0,
+    });
+    this.anims.create({
+        key: 'horizontal',
+            
+        frameRate: 7,
+        frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
+        repeat: 0,
+    });
+
+    
+    playerObject.play("idle")
     cursors = this.input.keyboard.createCursorKeys();
 }
 
@@ -71,22 +120,40 @@ function update(time, delta) {
     cur_width = timer_bar.style.width;
 
     // accept input and send it to server
-    if (cursors.left.isDown) {
+    if (Phaser.Input.Keyboard.JustDown(leftKey)) {
         if (playerPosition[0] - 1 >= 0) {
             playerPosition[0] = playerPosition[0] - 1;
+            
+            //Pause needs to be here to cancel old animations
+            playerObject.anims.pause();
+            playerObject.anims.play('horizontal').chain('idle');
         }
-    } else if (cursors.right.isDown) {
+    } else if (Phaser.Input.Keyboard.JustDown(rightKey)) {
         if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_X) {
             playerPosition[0] = playerPosition[0] + 1;
+           
+            playerObject.anims.pause();
+            playerObject.anims.play("horizontal").chain("idle");
+
+
         }
-    } else if (cursors.up.isDown) {
+    } else if (Phaser.Input.Keyboard.JustDown(upKey)) {
         if (playerPosition[1] - 1 >= 0) {
             playerPosition[1] = playerPosition[1] - 1;
+            
+            playerObject.anims.pause();
+            playerObject.play('vertical').chain('idle');
         }
-    } else if (cursors.down.isDown) {
+    } else if (Phaser.Input.Keyboard.JustDown(downKey)) {
         if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_Y) {
             playerPosition[1] = playerPosition[1] + 1;
+            
+            
+            playerObject.anims.pause();
+            playerObject.anims.play('vertical').chain('idle');
         }
+
+        
     }
 
     // update map according to map_array
