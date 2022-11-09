@@ -42,7 +42,6 @@ var playerPosition = [0, 0];
 var playerObject;
 
 var game = new Phaser.Game(config);
-var cursors;
 var leftKey;
 var rightKey;
 var upKey;
@@ -103,7 +102,6 @@ function create() {
 
     
     playerObject.play("idle")
-    cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update(time, delta) {
