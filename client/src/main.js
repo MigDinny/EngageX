@@ -144,7 +144,7 @@ function update(time, delta) {
                 playerObject.anims.play('horizontal').chain('idle');
             }
         } else if (cursors.right.isDown) {          // Phaser.Input.Keyboard.JustDown(rightKey)
-            if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_X) {
+            if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
                 playerPosition[0] = playerPosition[0] + 1;
                
                 playerObject.anims.pause();
@@ -160,7 +160,7 @@ function update(time, delta) {
                 playerObject.play('vertical').chain('idle');
             }
         } else if (cursors.down.isDown) {
-            if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_Y) {
+            if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
                 playerPosition[1] = playerPosition[1] + 1;
                 
                 
