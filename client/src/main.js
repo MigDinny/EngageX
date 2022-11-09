@@ -73,7 +73,7 @@ function create() {
     drawMap(this, map_array);
 
     playerObject = this.physics.add
-        .sprite(playerPosition[0] * 16 - 16, playerPosition[1] * 16 - 16, "slime")
+        .sprite(playerPosition[0] * 16 - 8, playerPosition[1] * 16 - 8, "slime")
         .setOrigin(0, 0);
 
     playerObject.setScale(1,1);
@@ -94,7 +94,7 @@ function create() {
     this.anims.create({
         key: 'horizontal',
             
-        frameRate: 7,
+        frameRate: 10,
         frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
         repeat: 0,
     });
