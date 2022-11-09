@@ -5,12 +5,14 @@ import { load, drawMap, updatePlayer, updateMap } from "./map-rendering.js";
 
 var config = {
     type: Phaser.AUTO,
+
     pixelArt: true,
     scale: {
         mode: Phaser.Scale.FIT,
         width: 300,
         height: 300
     },
+
     fps: {
         target: 30,
     },
@@ -119,6 +121,7 @@ function update(time, delta) {
     cur_width = timer_bar.style.width;
 
     // accept input and send it to server
+
     if (Phaser.Input.Keyboard.JustDown(leftKey)) {
         if (playerPosition[0] - 1 >= 0) {
             playerPosition[0] = playerPosition[0] - 1;
@@ -153,6 +156,7 @@ function update(time, delta) {
         }
 
         
+
     }
 
     // update map according to map_array
