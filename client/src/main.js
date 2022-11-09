@@ -125,13 +125,8 @@ function update(time, delta) {
     map_array[9][9].state = 1;
 
     // Updates timer size
-    var new_width = parseInt(cur_width) - 1;
-    if (new_width <= 0) {
-        timer_bar.style.width = max_width;
-        cur_width = max_width;
-    } else {
-        timer_bar.style.width = new_width + "px";
-    }
+    var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
+    timer_bar.style.width = new_width + "px";
     cur_width = timer_bar.style.width;
 
     // accept input and send it to server
