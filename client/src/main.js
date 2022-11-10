@@ -54,6 +54,7 @@ var muteKey;
 var bpm;
 var timerMovement;
 var incrementTimer;
+var startMusic;
 var cursors;
 
 // UI Elements
@@ -117,14 +118,14 @@ function create() {
     playerObject.play("idle");
 
     music = this.sound.add("game_music")
-    music.play(muteKey, 1, true);
-    music.setVolume(0.5);   // change with config
+    startMusic = true;
     bpm = 102
     timerMovement = 0;
     incrementTimer = 60 * 1000 / bpm;
 }
 
 function update(time, delta) {
+
     // Updates timer size
     var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
     timer_bar.style.width = new_width + "px";
@@ -133,6 +134,14 @@ function update(time, delta) {
     // accept input and send it to server
     if(timerMovement + incrementTimer < time) {
         timerMovement += incrementTimer;
+
+        // start music
+        if(startMusic) {
+            music.play(muteKey, 1, true);
+            music.setVolume(0.5);   // change with config
+            startMusic = false;
+        }
+        
         cursors = this.input.keyboard.createCursorKeys();
 
         if (cursors.left.isDown) {
