@@ -56,6 +56,8 @@ var timerMovement;
 var incrementTimer;
 var startMusic;
 var cursors;
+var windowKeySize = 300;
+var keyPressed = 0;
 
 // UI Elements
 var timer_bar = document.getElementById("timer-bar");
@@ -70,7 +72,8 @@ function preload() {
     });
 
 
-    this.load.audio("game_music", ["audio/Kevin_MacLeod___One-eyed_Maestro.mp3", "audio/Kevin_MacLeod___One-eyed_Maestro.ogg"]);
+    //this.load.audio("game_music", ["audio/Kevin_MacLeod___One-eyed_Maestro.mp3", "audio/Kevin_MacLeod___One-eyed_Maestro.ogg"]);
+    this.load.audio("game_music", ["audio/metronome-100bpm.mp3", "audio/metronome-100bpm.ogg"]);
     
     load(this);
 }
@@ -119,7 +122,7 @@ function create() {
 
     music = this.sound.add("game_music")
     startMusic = true;
-    bpm = 102
+    bpm = 100
     timerMovement = 0;
     incrementTimer = 60 * 1000 / bpm;
 }
@@ -131,6 +134,8 @@ function update(time, delta) {
     timer_bar.style.width = new_width + "px";
     cur_width = timer_bar.style.width;
 
+    cursors = this.input.keyboard.createCursorKeys();
+
     // accept input and send it to server
     if(timerMovement + incrementTimer < time) {
         timerMovement += incrementTimer;
@@ -140,11 +145,12 @@ function update(time, delta) {
             music.play(muteKey, 1, true);
             music.setVolume(0.5);   // change with config
             startMusic = false;
+            timerMovement = time;
         }
         
-        cursors = this.input.keyboard.createCursorKeys();
+        applyKey(this, cursors);
 
-        if (cursors.left.isDown) {
+        /*if (cursors.left.isDown) {
             if (playerPosition[0] - 1 >= 0) {
                 playerPosition[0] = playerPosition[0] - 1;
                 
@@ -176,8 +182,13 @@ function update(time, delta) {
                 playerObject.anims.pause();
                 playerObject.anims.play('vertical').chain('idle');
             }
-        }
+        }*/
+
+        console.log(keyPressed);
+        keyPressed = 0;
     }
+
+    checkKeys(this, cursors, time);
     
 
     
@@ -198,4 +209,72 @@ function update(time, delta) {
 
     map_array[0][0].state = 1;
     map_array[9][9].state = 1;
+}
+
+function checkKeys(g, cursors, time) {
+    if (keyPressed != 0) {
+        return;
+    }
+
+    if (cursors.left.isDown) {
+        console.log(((timerMovement + incrementTimer) - time), (((timerMovement + incrementTimer) - time) < windowKeySize));
+        if(Math.abs((timerMovement + incrementTimer) - time) < windowKeySize) {
+            keyPressed = cursors.left;
+            console.log(keyPressed);
+        } else {
+            keyPressed = -1;
+        }
+    } else if (cursors.right.isDown) {
+        console.log(((timerMovement + incrementTimer) - time), (((timerMovement + incrementTimer) - time) < windowKeySize));
+        if(Math.abs((timerMovement + incrementTimer) - time) < windowKeySize) {
+            keyPressed = cursors.right;
+            console.log("hit");
+        } else {
+            keyPressed = -1;
+        }
+    } else if (cursors.up.isDown) {
+        
+    } else if (cursors.down.isDown) {
+        
+    }
+}
+
+function applyKey(g, cursors) {
+    if (keyPressed == 0 || keyPressed == -1) {
+        return
+    }
+
+    if (keyPressed == cursors.left) {
+        if (playerPosition[0] - 1 >= 0) {
+            playerPosition[0] = playerPosition[0] - 1;
+            
+            //Pause needs to be here to cancel old animations
+            playerObject.anims.pause();
+            playerObject.anims.play('horizontal').chain('idle');
+        }
+    } else if (keyPressed == cursors.right) {          // Phaser.Input.Keyboard.JustDown(rightKey)
+        if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
+            playerPosition[0] = playerPosition[0] + 1;
+            
+            playerObject.anims.pause();
+            playerObject.anims.play("horizontal").chain("idle");
+
+
+        }
+    } else if (cursors.up.isDown) {
+        if (playerPosition[1] - 1 >= 0) {
+            playerPosition[1] = playerPosition[1] - 1;
+            
+            playerObject.anims.pause();
+            playerObject.play('vertical').chain('idle');
+        }
+    } else if (cursors.down.isDown) {
+        if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
+            playerPosition[1] = playerPosition[1] + 1;
+            
+            
+            playerObject.anims.pause();
+            playerObject.anims.play('vertical').chain('idle');
+        }
+    }
 }
