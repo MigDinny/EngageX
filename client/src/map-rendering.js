@@ -25,6 +25,7 @@ export const drawMap = (c, map) => {
                 )
                 .setOrigin(0, 0)
                 .setScale(constants.SCALE);
+
             tmp_obj.state = 1;
             map[line][col] = tmp_obj;
         }

@@ -42,11 +42,19 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
 var playerPosition = [0, 0];
 var playerObject;
 
+var music;
+
 var game = new Phaser.Game(config);
 var leftKey;
 var rightKey;
 var upKey;
 var downKey;
+var muteKey;
+
+var bpm;
+var timerMovement;
+var incrementTimer;
+var cursors;
 
 // UI Elements
 var timer_bar = document.getElementById("timer-bar");
@@ -54,14 +62,26 @@ var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
 
 function preload() {
+    this.load.spritesheet("slime", "img/slimeblue.png",
+    {
+        frameWidth:32,
+        frameHeight: 32,
+    });
+
+
+    this.load.audio("game_music", ["audio/Kevin_MacLeod___One-eyed_Maestro.mp3", "audio/Kevin_MacLeod___One-eyed_Maestro.ogg"]);
+    
     load(this);
 }
 
 function create() {
+
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+    muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
 
     drawMap(this, map_array);
 
@@ -72,14 +92,12 @@ function create() {
     playerObject.setScale(constants.SCALE);
     this.anims.create({
         key: "idle",
-
         frameRate: 10,
         frames: this.anims.generateFrameNumbers("slime", { start: 0, end: 3 }),
         repeat: -1,
     });
     this.anims.create({
         key: "vertical",
-
         frameRate: 10,
         frames: this.anims.generateFrameNumbers("slime", {
             start: 15,
@@ -87,6 +105,7 @@ function create() {
         }),
         repeat: 0,
     });
+    
     this.anims.create({
         key: "horizontal",
 
@@ -94,51 +113,71 @@ function create() {
         frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
         repeat: 0,
     });
-
+    
     playerObject.play("idle");
+
+    music = this.sound.add("game_music")
+    music.play(muteKey, 1, true);
+    music.setVolume(0.5);   // change with config
+    bpm = 102
+    timerMovement = 0;
+    incrementTimer = 60 * 1000 / bpm;
 }
 
 function update(time, delta) {
     // Updates timer size
-    var new_width = parseInt(cur_width) - 1;
-    if (new_width <= 0) {
-        timer_bar.style.width = max_width;
-        cur_width = max_width;
-    } else {
-        timer_bar.style.width = new_width + "px";
-    }
+    var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
+    timer_bar.style.width = new_width + "px";
     cur_width = timer_bar.style.width;
 
     // accept input and send it to server
+    if(timerMovement + incrementTimer < time) {
+        timerMovement += incrementTimer;
+        cursors = this.input.keyboard.createCursorKeys();
 
-    if (Phaser.Input.Keyboard.JustDown(leftKey)) {
-        if (playerPosition[0] - 1 >= 0) {
-            playerPosition[0] = playerPosition[0] - 1;
-
-            //Pause needs to be here to cancel old animations
-            playerObject.anims.pause();
-            playerObject.anims.play("horizontal").chain("idle");
+        if (cursors.left.isDown) {
+            if (playerPosition[0] - 1 >= 0) {
+                playerPosition[0] = playerPosition[0] - 1;
+                
+                //Pause needs to be here to cancel old animations
+                playerObject.anims.pause();
+                playerObject.anims.play('horizontal').chain('idle');
+            }
+        } else if (cursors.right.isDown) {          // Phaser.Input.Keyboard.JustDown(rightKey)
+            if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
+                playerPosition[0] = playerPosition[0] + 1;
+               
+                playerObject.anims.pause();
+                playerObject.anims.play("horizontal").chain("idle");
+    
+    
+            }
+        } else if (cursors.up.isDown) {
+            if (playerPosition[1] - 1 >= 0) {
+                playerPosition[1] = playerPosition[1] - 1;
+                
+                playerObject.anims.pause();
+                playerObject.play('vertical').chain('idle');
+            }
+        } else if (cursors.down.isDown) {
+            if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
+                playerPosition[1] = playerPosition[1] + 1;
+                
+                
+                playerObject.anims.pause();
+                playerObject.anims.play('vertical').chain('idle');
+            }
         }
-    } else if (Phaser.Input.Keyboard.JustDown(rightKey)) {
-        if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
-            playerPosition[0] = playerPosition[0] + 1;
+    }
+    
 
-            playerObject.anims.pause();
-            playerObject.anims.play("horizontal").chain("idle");
-        }
-    } else if (Phaser.Input.Keyboard.JustDown(upKey)) {
-        if (playerPosition[1] - 1 >= 0) {
-            playerPosition[1] = playerPosition[1] - 1;
+    
 
-            playerObject.anims.pause();
-            playerObject.play("vertical").chain("idle");
-        }
-    } else if (Phaser.Input.Keyboard.JustDown(downKey)) {
-        if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
-            playerPosition[1] = playerPosition[1] + 1;
-
-            playerObject.anims.pause();
-            playerObject.anims.play("vertical").chain("idle");
+    if (Phaser.Input.Keyboard.JustDown(muteKey)) {
+        if (music.isPlaying) {
+            music.pause();
+        } else {
+            music.resume();
         }
     }
 
