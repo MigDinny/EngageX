@@ -38,6 +38,23 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
     Array(constants.MAP_NUMBER_BLOCKS_WIDTH).fill(0)
 );
 
+
+const socket = new WebSocket('ws://localhost:8765');
+ 
+socket.addEventListener('open', function (event) {
+     
+    socket.send('Connection Established');
+     
+});
+
+socket.addEventListener('message', function (event) {
+ 
+    console.log(event.data);
+     
+});
+
+
+
 // player position X, Y coord in 10x10 grid
 var playerPosition = [0, 0];
 var playerObject;
@@ -55,6 +72,10 @@ var bpm;
 var timerMovement;
 var incrementTimer;
 var cursors;
+
+//var socket = io("ws://localhost");
+//var others;
+//var othersprites;
 
 // UI Elements
 var timer_bar = document.getElementById("timer-bar");
@@ -76,6 +97,8 @@ function preload() {
 
 function create() {
 
+    
+    
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
