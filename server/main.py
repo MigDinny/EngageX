@@ -1,4 +1,7 @@
 import asyncio
+import json
+import threading
+import time
 import websockets
 from lobby import Lobby
 
@@ -28,9 +31,20 @@ async def handler(websocket):
 
     # for each subsquent message received, process it
     async for message in websocket:
+        print(message)
         response = lobby.process_message(message)
         print("3")
-        if (response != None and len(response) > 0): await websocket.send(message)
+        if (response != None and len(response) > 0): await websocket.send(json.dumps(response))
+
+def send_notification():
+    while(True):
+        #TODO
+        #lobby.send_to_users(lobby.players, lobby.update_map())
+        time.sleep(0.6)
+        print("Update")
+
+
+
 
 # ids -> array of ids (can be single)
 # message -> msg to be sent
@@ -49,5 +63,7 @@ async def main():
 
 
 lobby = Lobby(send_to_users)
+
+threading.Thread(target=send_notification).start()
 
 asyncio.run(main())

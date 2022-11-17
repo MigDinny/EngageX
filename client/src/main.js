@@ -2,6 +2,7 @@
 import * as constants from "./constants.js";
 //import { load, drawMap, updateMap, updatePlayer } from "./map-rendering.js";
 import { load, drawMap, updatePlayer, updateMap } from "./map-rendering.js";
+import { sendMessage, interpretMessage } from "./socket.js";
 
 var config = {
     type: Phaser.AUTO,
@@ -40,21 +41,20 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
 
 
 const socket = new WebSocket('ws://localhost:8765');
- 
-socket.addEventListener('open', function (event) {
-     
-    socket.send('Connection Established');
-     
-});
 
-socket.addEventListener('message', function (event) {
- 
-    console.log(event.data);
-     
-});
+
+const start_connection = {
+    type: "open"
+  };
+
+socket.onopen = (event) => {
+    socket.send(JSON.stringify(start_connection));
+};
+//sendMessage(this, socket, start_connection)
 
 
 
+  
 // player position X, Y coord in 10x10 grid
 var playerPosition = [0, 0];
 var playerObject;
@@ -82,8 +82,13 @@ var timer_bar = document.getElementById("timer-bar");
 var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
 
+
+
+//Color of slime. Make this change variable be attributed by server in future 
+var char_color = "blue"
+
 function preload() {
-    this.load.spritesheet("slime", "img/slimeblue.png",
+    this.load.spritesheet("slime", "img/slime" + char_color + ".png",
     {
         frameWidth:32,
         frameHeight: 32,
@@ -148,6 +153,12 @@ function create() {
 }
 
 function update(time, delta) {
+
+    //Sees if socket has something in it
+    socket.onmessage = (event) => {
+        interpretMessage(this, socket, event);
+    }
+
     // Updates timer size
     var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
     timer_bar.style.width = new_width + "px";
@@ -155,6 +166,7 @@ function update(time, delta) {
 
     // accept input and send it to server
     if(timerMovement + incrementTimer < time) {
+
         timerMovement += incrementTimer;
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -172,6 +184,7 @@ function update(time, delta) {
                
                 playerObject.anims.pause();
                 playerObject.anims.play("horizontal").chain("idle");
+
     
     
             }
@@ -181,6 +194,7 @@ function update(time, delta) {
                 
                 playerObject.anims.pause();
                 playerObject.play('vertical').chain('idle');
+
             }
         } else if (cursors.down.isDown) {
             if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
@@ -191,6 +205,17 @@ function update(time, delta) {
                 playerObject.anims.play('vertical').chain('idle');
             }
         }
+
+        //UPDATES PLAYER ON THEIR CURRENT POSITION
+        const current_info = {
+            type: "info",
+            player: char_color,
+            x: playerPosition[0],
+            y: playerPosition[1],
+          };
+
+        sendMessage(this, socket, current_info);
+        console.log("here")
     }
     
 
