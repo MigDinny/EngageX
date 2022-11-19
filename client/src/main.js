@@ -1,9 +1,11 @@
 //import * as utils from "../lib/utils";
 import * as constants from "./constants.js";
-//import { load, drawMap, updateMap, updatePlayer } from "./map-rendering.js";
 import { load, drawMap, updatePlayer, updateMap } from "./map-rendering.js";
 import { sendMessage, interpretMessage } from "./socket.js";
 
+/**
+ * Game Config Object
+ */
 var config = {
     type: Phaser.AUTO,
 
@@ -33,47 +35,61 @@ var config = {
     },
 };
 
-// 10x10 array representing the grid map
-// contains reference to image object. state: 0 -> normal grass, 1 -> no vision grass, ...
+/**
+ * 10x10 Array representing the grid map.
+ * Contains reference to image object and its state. 0 -> normal grass, 1 -> no vision grass, etc ...
+ */
 var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
     Array(constants.MAP_NUMBER_BLOCKS_WIDTH).fill(0)
 );
 
+/**
+ * Websocket to communicate with the server.
+ */
+const socket = new WebSocket("ws://localhost:8765");
 
-const socket = new WebSocket('ws://localhost:8765');
-;
+var playerID;
 
-var id;
-//Sees if socket has something in it. Está um bocado à padeiro não conseguia meter as variaveis a guardarem o seu valor do outro lado.
+/**
+ * Socket onMessage event. This function gets called whenever a message is received from the server.
+ * @param {*} event
+ */
 socket.onmessage = (event) => {
-    var response = interpretMessage(this, socket, event, id);
+    var response = interpretMessage(this, socket, event, playerID);
 
-    switch(response.type){
+    switch (response.type) {
         case "id":
-            id = response.id;
-            break
+            playerID = response.id;
+            break;
 
         default:
-            break
-
-
+            break;
     }
-    console.log(id)
-}
+    console.log(id);
+};
 
+/**
+ * Socket onOpen event. This function gets called at the beginning of the connection.
+ */
+socket.onopen = (event) => {
+    // nothing for now...
+};
 
-//sendMessage(this, socket, start_connection)
-
-
-
-  
-// player position X, Y coord in 10x10 grid
+/**
+ * Game Multiplayer Variables - which are used to sync with the server
+ */
+var gameState = {
+    // nothing for now...
+};
 var playerPosition = [0, 0];
+var char_color = "blue"; // Color of slime. Make this change variable be attributed by server in future
+
+/**
+ * Game Global Variables
+ */
+var game = new Phaser.Game(config);
 var playerObject;
 
-var music;
-
-var game = new Phaser.Game(config);
 var leftKey;
 var rightKey;
 var upKey;
@@ -85,47 +101,50 @@ var timerMovement;
 var incrementTimer;
 var cursors;
 
-//var socket = io("ws://localhost");
-//var others;
-//var othersprites;
+var direction = "";
+var action = "";
 
-// UI Elements
+var music;
+
+/**
+ * UI Variables
+ */
 var timer_bar = document.getElementById("timer-bar");
 var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
 
-
-
-//Color of slime. Make this change variable be attributed by server in future 
-var char_color = "blue"
+/**
+ * Game Functions:
+ *  preload() -> loads media
+ *  create() -> starts all objects and configs
+ *  update() -> gets called every frame
+ */
 
 function preload() {
-    this.load.spritesheet("slime", "img/slime" + char_color + ".png",
-    {
-        frameWidth:32,
+    this.load.spritesheet("slime", "img/slime" + char_color + ".png", {
+        frameWidth: 32,
         frameHeight: 32,
     });
 
+    this.load.audio("game_music", [
+        "audio/Kevin_MacLeod___One-eyed_Maestro.mp3",
+        "audio/Kevin_MacLeod___One-eyed_Maestro.ogg",
+    ]);
 
-    this.load.audio("game_music", ["audio/Kevin_MacLeod___One-eyed_Maestro.mp3", "audio/Kevin_MacLeod___One-eyed_Maestro.ogg"]);
-    
     load(this);
 }
 
 function create() {
-
     //Sees if socket has something in it
     //socket.onmessage = (event) => {
     //    interpretMessage(this, socket, event);
     //}
-    
-    
+
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
-
 
     drawMap(this, map_array);
 
@@ -149,7 +168,7 @@ function create() {
         }),
         repeat: 0,
     });
-    
+
     this.anims.create({
         key: "horizontal",
 
@@ -157,31 +176,29 @@ function create() {
         frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
         repeat: 0,
     });
-    
+
     playerObject.play("idle");
 
-    music = this.sound.add("game_music")
+    music = this.sound.add("game_music");
     music.play(muteKey, 1, true);
-    music.setVolume(0.5);   // change with config
-    bpm = 102
+    music.setVolume(0.5); // change with config
+    bpm = 102;
     timerMovement = 0;
-    incrementTimer = 60 * 1000 / bpm;
+    incrementTimer = (60 * 1000) / bpm;
 }
 
-var direction = "";
-var action = "";
-
 function update(time, delta) {
-    
-    console.log(id)
+    console.log(id);
+
     // Updates timer size
-    var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
+    var new_width =
+        parseInt(max_width) -
+        ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
     timer_bar.style.width = new_width + "px";
     cur_width = timer_bar.style.width;
 
     // accept input and send it to server
-    if(timerMovement + incrementTimer < time) {
-
+    if (timerMovement + incrementTimer < time) {
         timerMovement += incrementTimer;
         cursors = this.input.keyboard.createCursorKeys();
 
@@ -191,22 +208,20 @@ function update(time, delta) {
                 action = "movement";
 
                 // playerPosition[0] = playerPosition[0] - 1;
-                
+
                 // //Pause needs to be here to cancel old animations
                 // playerObject.anims.pause();
                 // playerObject.anims.play('horizontal').chain('idle');
             }
-        } else if (cursors.right.isDown) {          // Phaser.Input.Keyboard.JustDown(rightKey)
+        } else if (cursors.right.isDown) {
+            // Phaser.Input.Keyboard.JustDown(rightKey)
             if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
                 direction = "right";
                 action = "movement";
                 // playerPosition[0] = playerPosition[0] + 1;
-               
+
                 // playerObject.anims.pause();
                 // playerObject.anims.play("horizontal").chain("idle");
-
-    
-    
             }
         } else if (cursors.up.isDown) {
             if (playerPosition[1] - 1 >= 0) {
@@ -214,18 +229,16 @@ function update(time, delta) {
                 action = "movement";
 
                 // playerPosition[1] = playerPosition[1] - 1;
-                
+
                 // playerObject.anims.pause();
                 // playerObject.play('vertical').chain('idle');
-
             }
         } else if (cursors.down.isDown) {
             if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
                 direction = "down";
                 action = "movement";
                 // playerPosition[1] = playerPosition[1] + 1;
-                
-                
+
                 // playerObject.anims.pause();
                 // playerObject.anims.play('vertical').chain('idle');
             }
@@ -239,17 +252,12 @@ function update(time, delta) {
             y: playerPosition[1],
             action: action,
             direction: direction,
-        
         };
-        
+
         direction = "";
 
         sendMessage(this, socket, current_info);
-        
     }
-    
-
-    
 
     if (Phaser.Input.Keyboard.JustDown(muteKey)) {
         if (music.isPlaying) {
@@ -264,7 +272,4 @@ function update(time, delta) {
 
     // update player according to its position
     updatePlayer(this, playerPosition, playerObject);
-
-    map_array[0][0].state = 1;
-    map_array[9][9].state = 1;
 }
