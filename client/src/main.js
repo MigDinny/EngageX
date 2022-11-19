@@ -41,15 +41,27 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
 
 
 const socket = new WebSocket('ws://localhost:8765');
+;
+
+var id;
+//Sees if socket has something in it. Está um bocado à padeiro não conseguia meter as variaveis a guardarem o seu valor do outro lado.
+socket.onmessage = (event) => {
+    var response = interpretMessage(this, socket, event, id);
+
+    switch(response.type){
+        case "id":
+            id = response.id;
+            break
+
+        default:
+            break
 
 
-const start_connection = {
-    type: "open"
-  };
+    }
+    console.log(id)
+}
 
-socket.onopen = (event) => {
-    socket.send(JSON.stringify(start_connection));
-};
+
 //sendMessage(this, socket, start_connection)
 
 
@@ -102,6 +114,10 @@ function preload() {
 
 function create() {
 
+    //Sees if socket has something in it
+    //socket.onmessage = (event) => {
+    //    interpretMessage(this, socket, event);
+    //}
     
     
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -152,13 +168,12 @@ function create() {
     incrementTimer = 60 * 1000 / bpm;
 }
 
+var direction = "";
+var action = "";
+
 function update(time, delta) {
-
-    //Sees if socket has something in it
-    socket.onmessage = (event) => {
-        interpretMessage(this, socket, event);
-    }
-
+    
+    console.log(id)
     // Updates timer size
     var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
     timer_bar.style.width = new_width + "px";
@@ -172,50 +187,65 @@ function update(time, delta) {
 
         if (cursors.left.isDown) {
             if (playerPosition[0] - 1 >= 0) {
-                playerPosition[0] = playerPosition[0] - 1;
+                direction = "left";
+                action = "movement";
+
+                // playerPosition[0] = playerPosition[0] - 1;
                 
-                //Pause needs to be here to cancel old animations
-                playerObject.anims.pause();
-                playerObject.anims.play('horizontal').chain('idle');
+                // //Pause needs to be here to cancel old animations
+                // playerObject.anims.pause();
+                // playerObject.anims.play('horizontal').chain('idle');
             }
         } else if (cursors.right.isDown) {          // Phaser.Input.Keyboard.JustDown(rightKey)
             if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
-                playerPosition[0] = playerPosition[0] + 1;
+                direction = "right";
+                action = "movement";
+                // playerPosition[0] = playerPosition[0] + 1;
                
-                playerObject.anims.pause();
-                playerObject.anims.play("horizontal").chain("idle");
+                // playerObject.anims.pause();
+                // playerObject.anims.play("horizontal").chain("idle");
 
     
     
             }
         } else if (cursors.up.isDown) {
             if (playerPosition[1] - 1 >= 0) {
-                playerPosition[1] = playerPosition[1] - 1;
+                direction = "up";
+                action = "movement";
+
+                // playerPosition[1] = playerPosition[1] - 1;
                 
-                playerObject.anims.pause();
-                playerObject.play('vertical').chain('idle');
+                // playerObject.anims.pause();
+                // playerObject.play('vertical').chain('idle');
 
             }
         } else if (cursors.down.isDown) {
             if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
-                playerPosition[1] = playerPosition[1] + 1;
+                direction = "down";
+                action = "movement";
+                // playerPosition[1] = playerPosition[1] + 1;
                 
                 
-                playerObject.anims.pause();
-                playerObject.anims.play('vertical').chain('idle');
+                // playerObject.anims.pause();
+                // playerObject.anims.play('vertical').chain('idle');
             }
         }
 
         //UPDATES PLAYER ON THEIR CURRENT POSITION
         const current_info = {
-            type: "info",
-            player: char_color,
+            type: "update",
+            id: id,
             x: playerPosition[0],
             y: playerPosition[1],
-          };
+            action: action,
+            direction: direction,
+        
+        };
+        
+        direction = "";
 
         sendMessage(this, socket, current_info);
-        console.log("here")
+        
     }
     
 

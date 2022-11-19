@@ -15,6 +15,12 @@ async def handler(websocket):
 
     # store user connection in an array
     clients[client_id] = websocket
+    print(client_id)
+    
+    #Add player to lobby and send response to client
+    response = lobby.add_player(client_id)
+    #print(response)
+    await websocket.send(json.dumps(response))
     
     # call asynchronously a function that will wait for the connection to be closed and delete the connection from the array
     # this currently doesnt work, figure out another way because this blocks the current thread (maybe threads?)
@@ -36,12 +42,12 @@ async def handler(websocket):
         print("3")
         if (response != None and len(response) > 0): await websocket.send(json.dumps(response))
 
-def send_notification():
-    while(True):
-        #TODO
-        #lobby.send_to_users(lobby.players, lobby.update_map())
-        time.sleep(0.6)
-        print("Update")
+# def send_notification():
+#     while(True):
+#         TODO
+#         lobby.send_to_users(lobby.players, lobby.update_map())
+#         time.sleep(1)
+#         print("Update")
 
 
 
@@ -64,6 +70,6 @@ async def main():
 
 lobby = Lobby(send_to_users)
 
-threading.Thread(target=send_notification).start()
+#threading.Thread(target=send_notification).start()
 
 asyncio.run(main())

@@ -33,7 +33,7 @@ export const drawMap = (c, map) => {
 };
 
 // Updates map. Also lights up squares that are adjacent to user
-export const updateMap = (c, map_array, playerPosition) => {
+/*export const updateMap = (c, map_array, playerPosition) => {
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_HEIGHT; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_WIDTH; col++) {
             if (
@@ -55,7 +55,11 @@ export const updateMap = (c, map_array, playerPosition) => {
             }
         }
     }
-};
+};*/
+
+export const updateMap = (c, current_state, id) => {
+
+}
 
 // updates player on the map based on player position
 export const updatePlayer = (c, playerPosition, playerObject) => {
