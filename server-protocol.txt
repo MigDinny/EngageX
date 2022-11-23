@@ -8,7 +8,7 @@
 			model: playerModel  // can be blue, green, etc
 			id: playerID
 		}
-		
+			
 // server accepts following messages
 
 {type: 'start'}
@@ -33,3 +33,8 @@
 		"hp": hp
 		"xp": xp
 	}
+
+// server sends start packet to everyone, informing positions and players 
+{type: 'start', players: []}
+
+

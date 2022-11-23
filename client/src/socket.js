@@ -1,4 +1,4 @@
-import { load, drawMap, updatePlayer, updateMap } from "./map-rendering.js";
+import * as constants from "./constants.js";
 
 export const sendMessage = (socket, message) => {
     // Web Socket is connected, send data using send()
@@ -11,19 +11,39 @@ export const closeSocket = (c, socket) => {
     };
 };
 
-export const interpretMessage = (c, socket, message, id) => {
+export const interpretMessage = (c, gameState, socket, message) => {
     console.log(message);
-    //console.log(message.data.type)
 
     const event = JSON.parse(message);
 
     switch (event.type) {
         case "init":
-            console.log(`[${event.player} , ${event.id}]`);
-            return { type: "id", id: event.id };
+            gameState.playerID = event.id;
+
+            break;
+
+        case "start":
+            // initialize all players
+            var arr = event.players;
+            for (let i = 0; i < arr.length; i++) {
+                gameState.players[arr[i].id] = {
+                    id: arr[i].id,
+                    position: [arr[i].x, arr[i].y],
+                    model: arr[i].model,
+                    hp: arr[i].hp,
+                    xp: arr[i].xp,
+                    gameObjectIndex: gameState.gameObjectIndexCounter++,
+                };
+            }
+
+            gameState.started = true;
+            break;
 
         case "update":
-            console.log(`[${event.player} , ${event.map_state}]`);
+            var arr = event.players;
+            for (let i = 0; i < arr.length; i++) {
+                gameState.players[arr[i].id].position = [arr[i].x, arr[i].y];
+            }
             break;
 
         case "fight":

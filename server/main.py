@@ -25,7 +25,7 @@ async def handler(websocket):
     
     # for each subsquent message received, process it
     async for message in websocket:
-        response = lobbyObj.process_message(message, local_client_id)
+        response = await lobbyObj.process_message(message, local_client_id)
         if (response != None and len(response) > 0): await websocket.send(json.dumps(response))
 
 

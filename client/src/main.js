@@ -1,6 +1,6 @@
 //import * as utils from "../lib/utils";
 import * as constants from "./constants.js";
-import { load, drawMap, updatePlayer, updateMap } from "./map-rendering.js";
+import { load, drawMap, updatePlayers, updateMap } from "./map-rendering.js";
 import { sendMessage, interpretMessage } from "./socket.js";
 
 /**
@@ -44,57 +44,31 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
 );
 
 /**
- * Websocket to communicate with the server.
- */
-const socket = new WebSocket("ws://localhost:8765");
-
-var playerID;
-
-/**
- * Socket onMessage event. This function gets called whenever a message is received from the server.
- * @param {*} event
- */
-socket.onmessage = (event) => {
-    var response = interpretMessage(this, socket, event, playerID);
-
-    switch (response.type) {
-        case "id":
-            playerID = response.id;
-            break;
-
-        default:
-            break;
-    }
-    console.log(id);
-};
-
-/**
- * Socket onOpen event. This function gets called at the beginning of the connection.
- */
-socket.onopen = (event) => {
-    // nothing for now...
-};
-
-/**
  * Game Multiplayer Variables - which are used to sync with the server
  */
 var gameState = {
-    // nothing for now...
+    playerID: 0,
+    players: [],
+    playerObjects: [],
+    started: false,
+    gameObjectIndexCounter: 0,
 };
-var playerPosition = [0, 0];
+
 var char_color = "blue"; // Color of slime. Make this change variable be attributed by server in future
 
 /**
  * Game Global Variables
  */
 var game = new Phaser.Game(config);
-var playerObject;
+
+var playerObjects = [];
 
 var leftKey;
 var rightKey;
 var upKey;
 var downKey;
 var muteKey;
+var startKey;
 
 var bpm;
 var timerMovement;
@@ -112,6 +86,28 @@ var music;
 var timer_bar = document.getElementById("timer-bar");
 var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
+
+/**
+ * Websocket to communicate with the server.
+ */
+const socket = new WebSocket("ws://localhost:8765");
+
+/**
+ * Socket onMessage event. This function gets called whenever a message is received from the server.
+ * @param {*} event
+ */
+socket.onmessage = (event) => {
+    var response = interpretMessage(this, gameState, socket, event.data);
+
+    console.log(gameState);
+};
+
+/**
+ * Socket onOpen event. This function gets called at the beginning of the connection.
+ */
+socket.onopen = (event) => {
+    // nothing for now...
+};
 
 /**
  * Game Functions:
@@ -135,24 +131,27 @@ function preload() {
 }
 
 function create() {
-    //Sees if socket has something in it
-    //socket.onmessage = (event) => {
-    //    interpretMessage(this, socket, event);
-    //}
-
+    cursors = this.input.keyboard.createCursorKeys();
     leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+    startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
     drawMap(this, map_array);
 
-    playerObject = this.physics.add
-        .sprite(playerPosition[0] * 16 - 8, playerPosition[1] * 16 - 8, "slime")
-        .setOrigin(0, 0);
+    /** PLAYERS GAME OBJECTS not yet associated with the players ( will be when start packet is received) */
+    for (var i = 0; i < 4; i++) {
+        playerObjects.push(
+            this.physics.add
+                .sprite(1, 1, "slime")
+                .setOrigin(0, 0)
+                .setScale(constants.SCALE)
+        );
+    }
 
-    playerObject.setScale(constants.SCALE);
+    /** ANIMATIONS  */
     this.anims.create({
         key: "idle",
         frameRate: 10,
@@ -177,8 +176,9 @@ function create() {
         repeat: 0,
     });
 
-    playerObject.play("idle");
+    // playerObject.play("idle");
 
+    /** MUSIC */
     music = this.sound.add("game_music");
     music.play(muteKey, 1, true);
     music.setVolume(0.5); // change with config
@@ -188,8 +188,6 @@ function create() {
 }
 
 function update(time, delta) {
-    console.log(id);
-
     // Updates timer size
     var new_width =
         parseInt(max_width) -
@@ -197,66 +195,30 @@ function update(time, delta) {
     timer_bar.style.width = new_width + "px";
     cur_width = timer_bar.style.width;
 
-    // accept input and send it to server
-    if (timerMovement + incrementTimer < time) {
-        timerMovement += incrementTimer;
-        cursors = this.input.keyboard.createCursorKeys();
+    /* INPUT HANDLING  */
 
-        if (cursors.left.isDown) {
-            if (playerPosition[0] - 1 >= 0) {
-                direction = "left";
-                action = "movement";
+    if (cursors.left.isDown) {
+        let msg = { type: "input", action: "ML" };
+        sendMessage(socket, msg);
 
-                // playerPosition[0] = playerPosition[0] - 1;
-
-                // //Pause needs to be here to cancel old animations
-                // playerObject.anims.pause();
-                // playerObject.anims.play('horizontal').chain('idle');
-            }
-        } else if (cursors.right.isDown) {
-            // Phaser.Input.Keyboard.JustDown(rightKey)
-            if (playerPosition[0] + 1 < constants.MAP_NUMBER_BLOCKS_WIDTH) {
-                direction = "right";
-                action = "movement";
-                // playerPosition[0] = playerPosition[0] + 1;
-
-                // playerObject.anims.pause();
-                // playerObject.anims.play("horizontal").chain("idle");
-            }
-        } else if (cursors.up.isDown) {
-            if (playerPosition[1] - 1 >= 0) {
-                direction = "up";
-                action = "movement";
-
-                // playerPosition[1] = playerPosition[1] - 1;
-
-                // playerObject.anims.pause();
-                // playerObject.play('vertical').chain('idle');
-            }
-        } else if (cursors.down.isDown) {
-            if (playerPosition[1] + 1 < constants.MAP_NUMBER_BLOCKS_HEIGHT) {
-                direction = "down";
-                action = "movement";
-                // playerPosition[1] = playerPosition[1] + 1;
-
-                // playerObject.anims.pause();
-                // playerObject.anims.play('vertical').chain('idle');
-            }
-        }
-
-        //UPDATES PLAYER ON THEIR CURRENT POSITION
-        const current_info = {
-            type: "update",
-            id: id,
-            x: playerPosition[0],
-            y: playerPosition[1],
-            action: action,
-            direction: direction,
-        };
-
-        direction = "";
-
-        sendMessage(this, socket, current_info);
+        // //Pause needs to be here to cancel old animations
+        // playerObject.anims.pause();
+        // playerObject.anims.play('horizontal').chain('idle');
+    } else if (cursors.right.isDown) {
+        let msg = { type: "input", action: "MR" };
+        sendMessage(socket, msg);
+        // playerObject.anims.pause();
+        // playerObject.anims.play("horizontal").chain("idle");
+    } else if (cursors.up.isDown) {
+        let msg = { type: "input", action: "MU" };
+        sendMessage(socket, msg);
+        // playerObject.anims.pause();
+        // playerObject.play('vertical').chain('idle');
+    } else if (cursors.down.isDown) {
+        let msg = { type: "input", action: "MD" };
+        sendMessage(socket, msg);
+        // playerObject.anims.pause();
+        // playerObject.anims.play('vertical').chain('idle');
     }
 
     if (Phaser.Input.Keyboard.JustDown(muteKey)) {
@@ -267,9 +229,14 @@ function update(time, delta) {
         }
     }
 
+    // send START packet
+    if (Phaser.Input.Keyboard.JustDown(startKey)) {
+        sendMessage(socket, { type: "start" });
+    }
+
     // update map according to map_array
-    updateMap(this, map_array, playerPosition);
+    if (gameState.started) updateMap(map_array, gameState);
 
     // update player according to its position
-    updatePlayer(this, playerPosition, playerObject);
+    if (gameState.started) updatePlayers(gameState, playerObjects);
 }

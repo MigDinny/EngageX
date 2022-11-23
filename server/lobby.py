@@ -14,15 +14,16 @@ class Player:
         self.xp = 0
 
     def toJSONable(self):
-        temp = {"id": self.id, "x": self.x, "y": self.y, "hp": self.hp, "xp": self.xp}
+        temp = {"id": self.id, "x": self.x, "y": self.y, "hp": self.hp, "xp": self.xp, "model": self.playerModel}
         return temp
 
 class Lobby:
 
     # Game constants
-    mapDimensions = [20, 10] # 20 columns, 10 rows
-    tick_time_ms = 5000
-    tick_time_sec = 5
+    mapDimensions = [40, 20] # 40 columns, 20 rows
+    initial_player_positions = [[1,1], [mapDimensions[0], 1], [1, mapDimensions[1]], [mapDimensions[0], mapDimensions[1]]]
+    tick_time_ms = 1000
+    tick_time_sec = 1
     charmodels = ["blue", "green"] + 500 * ["blue"] #Temporary. So we can have 500 charmodels before it crashes (we need to delete sockets that exit!!)
 
     # functions
@@ -31,14 +32,63 @@ class Lobby:
     # game variables
     tick_counter = 0
     players = {} # players dictionary of objects
+    playersInputBoolean = [False, False, False, False] # checks if player inputted anything this current tick
     
+    gameStarted = False
+    endTick = False
     
-    def __init__(self, sender_function, tick_time = 5000):
+    ## CONSTRUCTOR
+    def __init__(self, sender_function):
         self.send_to_users = sender_function
-        self.tick_time_ms = tick_time
-        pass
 
-    def movement(self, direction, id):
+        
+    def add_player(self, id):
+        self.players[id] = (Player(id, self.initial_player_positions[id%4][0], self.initial_player_positions[id%4][1], "blue"))
+
+        return {"type" : "init", "model": self.players[id].playerModel, "id": id}
+    
+
+    # processes the message from clientID (which is the same as the playerID)
+    # doesn't necessarily send a response
+    async def process_message(self, message, clientID):
+        msg = json.loads(message)
+
+        match msg["type"]:
+
+            case "input":
+                # ignore further inputs this tick
+                if (self.playersInputBoolean[clientID%4]): return
+
+                self.playersInputBoolean[clientID%4] = True
+                
+                match msg["action"]:
+                    
+                    case 'MR':
+                        self.__movement__('right', clientID)
+                    case 'ML':
+                        self.__movement__('left', clientID)
+                    case 'MU':
+                        self.__movement__('up', clientID)
+                    case 'MD':
+                        self.__movement__('down', clientID)
+            
+            case "start":
+                if (self.gameStarted):
+                    self.endTick = True
+                    return
+                
+                players_list = []
+                for (k,v) in self.players.items():
+                    players_list.append(v.toJSONable())
+                
+                startPacket = {"type": "start",  "players": players_list}
+
+                await self.send_to_users([], json.dumps(startPacket), all=True)
+
+                self.__run__()
+                
+    ## HANDLE MOVEMENT
+    def __movement__(self, direction, id):
         match direction:
             case "right":
                 if (self.players[id].x < self.mapDimensions[0]): self.players[id].x += 1
@@ -47,53 +97,25 @@ class Lobby:
             case "up":
                 if (self.players[id].y > 1):                     self.players[id].y -= 1
             case "down":
-                if (self.players[id].x < self.mapDimensions[1]): self.players[id].y += 1
-        
-
-    # processes the message from clientID (which is the same as the playerID)
-    # doesn't necessarily send a response
-    def process_message(self, message, clientID):
-        msg = json.loads(message)
-
-        match msg["type"]:
-
-            case "input":
-
-                match msg["action"]:
-                    
-                    case 'MR':
-                        self.movement('right', clientID)
-                    case 'ML':
-                        self.movement('left', clientID)
-                    case 'MU':
-                        self.movement('up', clientID)
-                    case 'MD':
-                        self.movement('down', clientID)
-            
-            case "start":
-                self.run()
-
-    def add_player(self, id):
-        self.players[id] = (Player(id, 1, 1, "blue"))
-
-        return {"type" : "init", "model": self.players[id].playerModel, "id": id}
-
+                if (self.players[id].y < self.mapDimensions[1]): self.players[id].y += 1
+                
     # updates game state every TICK-time
-    def run(self):
-        thread = threading.Thread(target=self.between_callback)
+    def __run__(self):
+        self.gameStarted = True
+        thread = threading.Thread(target=self.__between_callback__)
 
         print("Game starting...")
         thread.start()
 
-    def between_callback(self):
+    def __between_callback__(self):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        loop.run_until_complete(self.tick())
+        loop.run_until_complete(self.__tick__())
         loop.close()
 
-    async def tick(self):
-        while (True):
+    async def __tick__(self):
+        while (not self.endTick):
             # process game tick
             self.tick_counter += 1
             print("TICK: " + str(self.tick_counter))
@@ -103,9 +125,12 @@ class Lobby:
             for (k,v) in self.players.items():
                 players_list.append(v.toJSONable())
 
-            gameState = {"type": "update", "players": players_list}
+            gameState = {"type": "update", "tick": self.tick_counter, "players": players_list}
 
             # send game state to users
             await self.send_to_users([], json.dumps(gameState), all=True)
 
+            # clear input boolean
+            self.playersInputBoolean = [False, False, False, False]
+            
             time.sleep(self.tick_time_sec)
