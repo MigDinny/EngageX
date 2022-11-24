@@ -204,7 +204,7 @@ function update(time, delta) {
 
     if(gameState.started && firstTick){
         music.resume();
-        firstTick = False;
+        firstTick = false;
     }
 
 
