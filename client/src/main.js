@@ -207,7 +207,7 @@ function update(time, delta) {
         firstTick = False;
     }
 
-    text.setText(`Press S to start Game`);
+
     /* INPUT HANDLING  */   
     if (cursors.left.isDown) {
         let msg = { type: "input", action: "ML" };
