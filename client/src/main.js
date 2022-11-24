@@ -141,15 +141,7 @@ function create() {
 
     drawMap(this, map_array);
 
-    /** PLAYERS GAME OBJECTS not yet associated with the players ( will be when start packet is received) */
-    for (var i = 0; i < 4; i++) {
-        playerObjects.push(
-            this.physics.add
-                .sprite(1, 1, "slime")
-                .setOrigin(0, 0)
-                .setScale(constants.SCALE)
-        );
-    }
+    
 
     /** ANIMATIONS  */
     this.anims.create({
@@ -176,24 +168,44 @@ function create() {
         repeat: 0,
     });
 
-    // playerObject.play("idle");
+    /** PLAYERS GAME OBJECTS not yet associated with the players ( will be when start packet is received) */
+    for (var i = 0; i < 4; i++) {
+        playerObjects.push(
+            this.physics.add
+                .sprite(1, 1, "slime")
+                .setOrigin(0, 0)
+                .setScale(constants.SCALE)
+                .play("idle")
+        );
+    }
 
     /** MUSIC */
+    
     music = this.sound.add("game_music");
     music.play(muteKey, 1, true);
     music.setVolume(0.5); // change with config
     bpm = 102;
     timerMovement = 0;
     incrementTimer = (60 * 1000) / bpm;
+    music.pause();
 }
+
+var firstTick = True;
 
 function update(time, delta) {
     // Updates timer size
-    var new_width =
-        parseInt(max_width) -
-        ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
-    timer_bar.style.width = new_width + "px";
-    cur_width = timer_bar.style.width;
+    if(gameState.started){
+        var new_width =
+            parseInt(max_width) -
+            ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
+        timer_bar.style.width = new_width + "px";
+        cur_width = timer_bar.style.width;
+    }
+
+    if(gameState.started && firstTick){
+        music.resume();
+        firstTick = False;
+    }
 
     /* INPUT HANDLING  */
 
@@ -212,13 +224,13 @@ function update(time, delta) {
     } else if (cursors.up.isDown) {
         let msg = { type: "input", action: "MU" };
         sendMessage(socket, msg);
-        // playerObject.anims.pause();
-        // playerObject.play('vertical').chain('idle');
+        playerObjects[gameState.playerID].anims.pause();
+        playerObjects[gameState.playerID].play('vertical').chain('idle');
     } else if (cursors.down.isDown) {
         let msg = { type: "input", action: "MD" };
         sendMessage(socket, msg);
-        // playerObject.anims.pause();
-        // playerObject.anims.play('vertical').chain('idle');
+        playerObjects[gameState.playerID].anims.pause();
+        playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
     }
 
     if (Phaser.Input.Keyboard.JustDown(muteKey)) {

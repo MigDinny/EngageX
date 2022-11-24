@@ -19,7 +19,6 @@ export const interpretMessage = (c, gameState, socket, message) => {
     switch (event.type) {
         case "init":
             gameState.playerID = event.id;
-
             break;
 
         case "start":
