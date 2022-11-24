@@ -190,7 +190,7 @@ function create() {
     music.pause();
 }
 
-var firstTick = True;
+var firstTick = true;
 
 function update(time, delta) {
     // Updates timer size
@@ -207,8 +207,8 @@ function update(time, delta) {
         firstTick = False;
     }
 
-    /* INPUT HANDLING  */
-
+    text.setText(`Press S to start Game`);
+    /* INPUT HANDLING  */   
     if (cursors.left.isDown) {
         let msg = { type: "input", action: "ML" };
         sendMessage(socket, msg);
