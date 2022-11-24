@@ -78,6 +78,7 @@ var cursors;
 var direction = "";
 var action = "";
 
+var startText;
 var music;
 
 /**
@@ -188,9 +189,11 @@ function create() {
     timerMovement = 0;
     incrementTimer = (60 * 1000) / bpm;
     music.pause();
+
+    startText = this.add.text(0, 0, "Press S to start game");
 }
 
-var firstTick = True;
+var firstTick = true;
 
 function update(time, delta) {
     // Updates timer size
@@ -204,7 +207,7 @@ function update(time, delta) {
 
     if(gameState.started && firstTick){
         music.resume();
-        firstTick = False;
+        firstTick = false;
     }
 
     /* INPUT HANDLING  */
@@ -244,6 +247,7 @@ function update(time, delta) {
     // send START packet
     if (Phaser.Input.Keyboard.JustDown(startKey)) {
         sendMessage(socket, { type: "start" });
+        startText.visible = false;
     }
 
     // update map according to map_array
