@@ -198,6 +198,7 @@ var firstTick = true;
 function update(time, delta) {
     // Updates timer size
     if(gameState.started){
+        startText.visible = false;
         var new_width =
             parseInt(max_width) -
             ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
@@ -247,7 +248,7 @@ function update(time, delta) {
     // send START packet
     if (Phaser.Input.Keyboard.JustDown(startKey)) {
         sendMessage(socket, { type: "start" });
-        startText.visible = false;
+        
     }
 
     // update map according to map_array
