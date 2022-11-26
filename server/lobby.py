@@ -71,6 +71,12 @@ class Lobby:
                         self.__movement__('up', clientID)
                     case 'MD':
                         self.__movement__('down', clientID)
+                    case 'HV':
+                        pass
+                    case 'SO':
+                        pass
+                    case 'XP':
+                        self.__saveXP__(clientID)
             
             case "start":
                 if (self.gameStarted):
@@ -98,7 +104,14 @@ class Lobby:
                 if (self.players[id].y > 1):                     self.players[id].y -= 1
             case "down":
                 if (self.players[id].y < self.mapDimensions[1]): self.players[id].y += 1
-                
+    
+    # Player loses half hp and gains xp equal to the hp lost
+    def __saveXP__(self, id):
+        lostHp = self.players[id].hp // 2
+        self.players[id].hp -= lostHp
+        self.players[id].xp += lostHp
+        
+
     # updates game state every TICK-time
     def __run__(self):
         self.gameStarted = True

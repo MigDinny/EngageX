@@ -69,6 +69,9 @@ var upKey;
 var downKey;
 var muteKey;
 var startKey;
+var harvestKey;
+var sowKey;
+var saveXpKey;
 
 var bpm;
 var timerMovement;
@@ -77,6 +80,9 @@ var cursors;
 
 var direction = "";
 var action = "";
+
+var hpText;
+var xpText;
 
 var music;
 
@@ -138,6 +144,10 @@ function create() {
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    harvestKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    sowKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    saveXpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+
 
     drawMap(this, map_array);
 
@@ -179,6 +189,21 @@ function create() {
         );
     }
 
+    /** UI Text*/
+    hpText = this.add.text(0, constants.MAP_NUMBER_BLOCKS_HEIGHT* (constants.BLOCK_SIZE_Y/constants.SCALE - 2), "- Current HP:", {
+        font: "15px Arial", 
+        align: "center",
+        color: '#8B0000'
+    });
+    xpText = this.add.text(0, constants.MAP_NUMBER_BLOCKS_HEIGHT* (constants.BLOCK_SIZE_Y/constants.SCALE - 1), "- Current XP:" , {
+        font: "15px Arial", 
+        align: "center",
+        color: 	"#191970",
+    });
+
+    hpText.setBackgroundColor('#FA8072');
+    xpText.setBackgroundColor('#87CEEB'); 
+
     /** MUSIC */
     
     music = this.sound.add("game_music");
@@ -195,6 +220,10 @@ var firstTick = true;
 function update(time, delta) {
     // Updates timer size
     if(gameState.started){
+
+        hpText.setText("Current HP: " + gameState.players[gameState.playerID].hp)
+        xpText.setText("Current XP: " + gameState.players[gameState.playerID].xp)
+
         var new_width =
             parseInt(max_width) -
             ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
@@ -234,6 +263,18 @@ function update(time, delta) {
 
         // playerObjects[gameState.playerID].anims.pause();
         // playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
+    } else if (Phaser.Input.Keyboard.JustDown(harvestKey)){
+        let msg = { type: "input", action: "HV" };
+        sendMessage(socket, msg);
+
+    } else if (Phaser.Input.Keyboard.JustDown(sowKey)){
+        let msg = { type: "input", action: "SO" };
+        sendMessage(socket, msg);
+
+    } else if (Phaser.Input.Keyboard.JustDown(saveXpKey)){
+        console.log("HEREEE");
+        let msg = { type: "input", action: "XP" };
+        sendMessage(socket, msg);
     }
 
     if (Phaser.Input.Keyboard.JustDown(muteKey)) {

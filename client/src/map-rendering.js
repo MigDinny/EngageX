@@ -69,4 +69,5 @@ export const updatePlayers = (gameState, playerObjects) => {
             player.position[1] * constants.BLOCK_SIZE_Y -
             constants.BLOCK_SIZE_Y / 2;
     }
+    
 };

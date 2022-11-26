@@ -16,9 +16,12 @@
 {type: 'input', action: ...}
 	action can be:
 		'MR': move right
-		'ML'
-		'MU'
-		'MD'
+		'ML': move left
+		'MU': move up
+		'MD': move down
+		'HV': harvest tile
+		'SO': sow adjacent tiles
+		'XP': convert hp into xp
 		...
 
 
