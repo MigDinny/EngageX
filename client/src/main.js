@@ -213,24 +213,27 @@ function update(time, delta) {
         let msg = { type: "input", action: "ML" };
         sendMessage(socket, msg);
 
-        // //Pause needs to be here to cancel old animations
-        // playerObject.anims.pause();
-        // playerObject.anims.play('horizontal').chain('idle');
+        // Pause needs to be here to cancel old animations
+        // playerObjects[gameState.playerID].anims.pause();
+        // playerObjects[gameState.playerID].anims.play('horizontal').chain('idle');
     } else if (cursors.right.isDown) {
         let msg = { type: "input", action: "MR" };
         sendMessage(socket, msg);
-        // playerObject.anims.pause();
-        // playerObject.anims.play("horizontal").chain("idle");
+
+        // playerObjects[gameState.playerID].anims.pause();
+        // playerObjects[gameState.playerID].anims.play("horizontal").chain("idle");
     } else if (cursors.up.isDown) {
         let msg = { type: "input", action: "MU" };
         sendMessage(socket, msg);
-        playerObjects[gameState.playerID].anims.pause();
-        playerObjects[gameState.playerID].play('vertical').chain('idle');
+
+        // playerObjects[gameState.playerID].anims.pause();
+        // playerObjects[gameState.playerID].play('vertical').chain('idle');
     } else if (cursors.down.isDown) {
         let msg = { type: "input", action: "MD" };
         sendMessage(socket, msg);
-        playerObjects[gameState.playerID].anims.pause();
-        playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
+
+        // playerObjects[gameState.playerID].anims.pause();
+        // playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
     }
 
     if (Phaser.Input.Keyboard.JustDown(muteKey)) {
