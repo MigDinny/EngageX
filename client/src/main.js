@@ -91,10 +91,10 @@ var skill_elems = [
     document.getElementById("harvest"),
     document.getElementById("sow"),
     document.getElementById("xp"),
-    document.getElementById("flee"),
     document.getElementById("fight"),
     document.getElementById("share"),
     document.getElementById("steal"),
+    document.getElementById("flee"),
 ];
 
 /**

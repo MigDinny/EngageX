@@ -1,4 +1,4 @@
-import { SKILL_SRC_ENABLED, SKILL_SRC_DISABLED } from "./constants.js";
+import { SKILL_SRC_ENABLED, SKILL_SRC_DISABLED, MAX_XP }  from "./constants.js";
 
 /**
  * This enables the skill on the UI.
@@ -67,6 +67,6 @@ export const updateHUD = (gameState) => {
     setHP(gameState.players[gameState.playerID].hp);
     setXP(
         gameState.players[gameState.playerID].xp,
-        gameState.players[gameState.playerID].xp / constants.MAX_XP
+        gameState.players[gameState.playerID].xp / MAX_XP
     );
 };
