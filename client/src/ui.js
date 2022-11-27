@@ -1,4 +1,4 @@
-import { SKILL_SRC_ENABLED, SKILL_SRC_DISABLED } from "./constants";
+import { SKILL_SRC_ENABLED, SKILL_SRC_DISABLED } from "./constants.js";
 
 /**
  * This enables the skill on the UI.
@@ -43,7 +43,7 @@ export const setPosition = (position) => {
  * Sets the HP of the player on the UI hp bar and text.
  * @param {integer} hpPercentage percentage of player's hp
  */
-export const setHP = (hpPercentage) => {
+const setHP = (hpPercentage) => {
     document.getElementById("hp-bar").style["width"] = hpPercentage + "%";
     document.getElementById("hp-text").innerHTML =
         "HP: " + String(hpPercentage) + "/100";
@@ -54,7 +54,19 @@ export const setHP = (hpPercentage) => {
  * @param {integer} xp
  * @param {integer} xpPercentage
  */
-export const setXP = (xp, xpPercentage) => {
+const setXP = (xp, xpPercentage) => {
     document.getElementById("xp-bar").style["width"] = xpPercentage + "%";
     document.getElementById("xp-text").innerHTML = "XP: " + String(xp);
+};
+
+/**
+ * Updates the HUD - HP, XP and position on the leaderboard
+ * @param {*} gameState
+ */
+export const updateHUD = (gameState) => {
+    setHP(gameState.players[gameState.playerID].hp);
+    setXP(
+        gameState.players[gameState.playerID].xp,
+        gameState.players[gameState.playerID].xp / constants.MAX_XP
+    );
 };

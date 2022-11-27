@@ -1,6 +1,7 @@
 //import * as utils from "../lib/utils";
 import * as constants from "./constants.js";
 import { load, drawMap, updatePlayers, updateMap } from "./map-rendering.js";
+import { updateHUD } from "./ui.js";
 import { sendMessage, interpretMessage } from "./socket.js";
 
 /**
@@ -49,7 +50,6 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
 var gameState = {
     playerID: 0,
     players: [],
-    playerObjects: [],
     started: false,
     gameObjectIndexCounter: 0,
 };
@@ -261,4 +261,6 @@ function update(time, delta) {
 
     // update player according to its position
     if (gameState.started) updatePlayers(gameState, playerObjects);
+
+    if (gameState.started) updateHUD(gameState);
 }

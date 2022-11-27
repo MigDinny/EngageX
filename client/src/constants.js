@@ -1,3 +1,6 @@
+// GAME constants
+export const MAX_XP = 250;
+
 // UI constants
 export const SCALE = 1; // not being used, please do not change this value
 export const MAP_NUMBER_BLOCKS_WIDTH = 40;
