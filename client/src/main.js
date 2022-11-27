@@ -309,6 +309,11 @@ function update(time, delta) {
         sendMessage(socket, { type: "start" });
     }
 
+    // send START packet
+    if (Phaser.Input.Keyboard.JustDown(startKey)) {
+        sendMessage(socket, { type: "start" });
+    }
+
     // update map according to map_array
     if (gameState.started) updateMap(map_array, gameState);
 
