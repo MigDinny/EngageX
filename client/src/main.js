@@ -83,6 +83,7 @@ var action = "";
 
 var hpText;
 var xpText;
+var gameOverText;
 
 var music;
 
@@ -200,9 +201,17 @@ function create() {
         align: "center",
         color: 	"#191970",
     });
+    gameOverText =  this.add.text(constants.MAP_NUMBER_BLOCKS_WIDTH* (constants.BLOCK_SIZE_X/constants.SCALE - 6) / 2, constants.MAP_NUMBER_BLOCKS_HEIGHT* (constants.BLOCK_SIZE_Y/constants.SCALE - 1) / 2, "GAME OVER" , {
+        font: "40px Arial", 
+        align: "center",
+        color: 	"#000000",
+    });
 
+    gameOverText.setBackgroundColor('#696969');
+    gameOverText.visible = false;
     hpText.setBackgroundColor('#FA8072');
     xpText.setBackgroundColor('#87CEEB'); 
+
 
     /** MUSIC */
     
@@ -218,71 +227,81 @@ function create() {
 var firstTick = true;
 
 function update(time, delta) {
-    // Updates timer size
+    
     if(gameState.started){
 
+        // updates xp and hp texts
         hpText.setText("Current HP: " + gameState.players[gameState.playerID].hp)
         xpText.setText("Current XP: " + gameState.players[gameState.playerID].xp)
 
-        var new_width =
-            parseInt(max_width) -
-            ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
-        timer_bar.style.width = new_width + "px";
-        cur_width = timer_bar.style.width;
+        // checks if player is still alive 
+        if( gameState.players[gameState.playerID].hp > 0){
+            
+            // updates timer size
+            var new_width =
+                parseInt(max_width) -
+                ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
+            
+                timer_bar.style.width = new_width + "px";
+            cur_width = timer_bar.style.width;
+            
+            /* INPUT HANDLING  */   
+            if (cursors.left.isDown) {
+                let msg = { type: "input", action: "ML" };
+                sendMessage(socket, msg);
+    
+                // Pause needs to be here to cancel old animations
+                // playerObjects[gameState.playerID].anims.pause();
+                // playerObjects[gameState.playerID].anims.play('horizontal').chain('idle');
+            } else if (cursors.right.isDown) {
+                let msg = { type: "input", action: "MR" };
+                sendMessage(socket, msg);
+    
+                // playerObjects[gameState.playerID].anims.pause();
+                // playerObjects[gameState.playerID].anims.play("horizontal").chain("idle");
+            } else if (cursors.up.isDown) {
+                let msg = { type: "input", action: "MU" };
+                sendMessage(socket, msg);
+    
+                // playerObjects[gameState.playerID].anims.pause();
+                // playerObjects[gameState.playerID].play('vertical').chain('idle');
+            } else if (cursors.down.isDown) {
+                let msg = { type: "input", action: "MD" };
+                sendMessage(socket, msg);
+    
+                // playerObjects[gameState.playerID].anims.pause();
+                // playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
+            } else if (Phaser.Input.Keyboard.JustDown(harvestKey)){
+                let msg = { type: "input", action: "HV" };
+                sendMessage(socket, msg);
+    
+            } else if (Phaser.Input.Keyboard.JustDown(sowKey)){
+                let msg = { type: "input", action: "SO" };
+                sendMessage(socket, msg);
+    
+            } else if (Phaser.Input.Keyboard.JustDown(saveXpKey)){
+                let msg = { type: "input", action: "XP" };
+                sendMessage(socket, msg);
+            }
+    
+            if (Phaser.Input.Keyboard.JustDown(muteKey)) {
+                if (music.isPlaying) {
+                    music.pause();
+                } else {
+                    music.resume();
+                }
+            }
+        }
+        // player has died
+        else{
+            gameOverText.visible = true;
+        }
     }
 
+    // only start music when first update packet is sent
     if(gameState.started && firstTick){
         music.resume();
         firstTick = false;
-    }
-
-
-    /* INPUT HANDLING  */   
-    if (cursors.left.isDown) {
-        let msg = { type: "input", action: "ML" };
-        sendMessage(socket, msg);
-
-        // Pause needs to be here to cancel old animations
-        // playerObjects[gameState.playerID].anims.pause();
-        // playerObjects[gameState.playerID].anims.play('horizontal').chain('idle');
-    } else if (cursors.right.isDown) {
-        let msg = { type: "input", action: "MR" };
-        sendMessage(socket, msg);
-
-        // playerObjects[gameState.playerID].anims.pause();
-        // playerObjects[gameState.playerID].anims.play("horizontal").chain("idle");
-    } else if (cursors.up.isDown) {
-        let msg = { type: "input", action: "MU" };
-        sendMessage(socket, msg);
-
-        // playerObjects[gameState.playerID].anims.pause();
-        // playerObjects[gameState.playerID].play('vertical').chain('idle');
-    } else if (cursors.down.isDown) {
-        let msg = { type: "input", action: "MD" };
-        sendMessage(socket, msg);
-
-        // playerObjects[gameState.playerID].anims.pause();
-        // playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
-    } else if (Phaser.Input.Keyboard.JustDown(harvestKey)){
-        let msg = { type: "input", action: "HV" };
-        sendMessage(socket, msg);
-
-    } else if (Phaser.Input.Keyboard.JustDown(sowKey)){
-        let msg = { type: "input", action: "SO" };
-        sendMessage(socket, msg);
-
-    } else if (Phaser.Input.Keyboard.JustDown(saveXpKey)){
-        console.log("HEREEE");
-        let msg = { type: "input", action: "XP" };
-        sendMessage(socket, msg);
-    }
-
-    if (Phaser.Input.Keyboard.JustDown(muteKey)) {
-        if (music.isPlaying) {
-            music.pause();
-        } else {
-            music.resume();
-        }
     }
 
     // send START packet

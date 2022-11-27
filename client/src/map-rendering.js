@@ -7,7 +7,8 @@ export const load = (c) => {
     });
 
     c.load.image("grass-block", "img/grass_vision.png");
-    c.load.image("grass-block-no-vision", "img/grass_no_vision.png");
+    c.load.image("grass-block-no-vision", "img/no_vision_grass.png");
+    c.load.image("food-block", "img/tall_grass.png");
 
     c.load.setBaseURL("");
 };
@@ -32,14 +33,14 @@ export const drawMap = (c, map) => {
 
 // Updates map. Also lights up squares that are adjacent to user
 export const updateMap = (map_array, gameState) => {
-    console.log(gameState);
+    //console.log(gameState);
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_HEIGHT; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_WIDTH; col++) {
             if (
-                gameState.players[gameState.playerID].position[0] - col <= 2 &&
-                gameState.players[gameState.playerID].position[0] - col >= -2 &&
-                gameState.players[gameState.playerID].position[1] - line <= 2 &&
-                gameState.players[gameState.playerID].position[1] - line >= -2
+                gameState.players[gameState.playerID].position[0] - col <= constants.VISION_RANGE &&
+                gameState.players[gameState.playerID].position[0] - col >= -constants.VISION_RANGE &&
+                gameState.players[gameState.playerID].position[1] - line <= constants.VISION_RANGE &&
+                gameState.players[gameState.playerID].position[1] - line >= -constants.VISION_RANGE
             )
                 map_array[line][col].state = 0;
             else map_array[line][col].state = 1;
@@ -54,6 +55,31 @@ export const updateMap = (map_array, gameState) => {
             }
         }
     }
+
+    var foodArr =  gameState.players[gameState.playerID].foodArr;
+    var player_x = gameState.players[gameState.playerID].position[0];
+    var player_y = gameState.players[gameState.playerID].position[1];
+
+
+    for(var line = 0; line < foodArr.length; line++){
+        let y_pos = player_y - constants.VISION_RANGE + line;
+
+        for(var col = 0; col < foodArr[0].length; col++){
+            let x_pos = player_x - constants.VISION_RANGE + col;
+           
+            switch(foodArr[line][col]){
+                case -1:
+                    continue;
+                case 0:
+                    map_array[y_pos][x_pos].setTexture("grass-block");
+                    break;
+                case 1:
+                    map_array[y_pos][x_pos].setTexture("food-block");
+                    break;
+            }
+        }
+    }
+
 };
 
 // updates player on the map based on player position

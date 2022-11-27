@@ -7,6 +7,8 @@ export const BLOCK_SIZE_Y = 16 * SCALE;
 export const SERVER_ADDR = "localhost";
 export const SERVER_PORT = 9001;
 
+export const VISION_RANGE = 3;
+
 export const INIT_PLAYER_POSITIONS = [
     [1, 1],
     [20, 1],
