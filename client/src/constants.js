@@ -20,6 +20,15 @@ export const FLEE_ENABLED = "img/HUD/flee-enabled.png";
 export const FIGHT_ENABLED = "img/HUD/fight-enabled.png";
 export const SHARE_ENABLED = "img/HUD/share-enabled.png";
 export const STEAL_ENABLED = "img/HUD/steal-enabled.png";
+export const SKILL_SRC_ENABLED = [
+    HARVEST_ENABLED,
+    SOW_ENABLED,
+    XP_ENABLED,
+    FLEE_ENABLED,
+    FIGHT_ENABLED,
+    SHARE_ENABLED,
+    STEAL_ENABLED,
+];
 
 // disabled skill src paths
 export const HARVEST_DISABLED = "img/HUD/harvest-disabled.png";
@@ -29,6 +38,14 @@ export const FLEE_DISABLED = "img/HUD/flee-disabled.png";
 export const FIGHT_DISABLED = "img/HUD/fight-disabled.png";
 export const SHARE_DISABLED = "img/HUD/share-disabled.png";
 export const STEAL_DISABLED = "img/HUD/steal-disabled.png";
+export const SKILL_SRC_DISABLED = [
+    HARVEST_DISABLED,
+    SOW_DISABLED,
+    XP_DISABLED,
+    FLEE_DISABLED,
+    SHARE_DISABLED,
+    STEAL_DISABLED,
+];
 
 // connection constants
 export const SERVER_ADDR = "localhost";

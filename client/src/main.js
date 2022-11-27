@@ -87,6 +87,16 @@ var timer_bar = document.getElementById("timer-bar");
 var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
 
+var skill_elems = [
+    document.getElementById("harvest"),
+    document.getElementById("sow"),
+    document.getElementById("xp"),
+    document.getElementById("flee"),
+    document.getElementById("fight"),
+    document.getElementById("share"),
+    document.getElementById("steal"),
+];
+
 /**
  * Websocket to communicate with the server.
  */
@@ -141,8 +151,6 @@ function create() {
 
     drawMap(this, map_array);
 
-    
-
     /** ANIMATIONS  */
     this.anims.create({
         key: "idle",
@@ -180,7 +188,7 @@ function create() {
     }
 
     /** MUSIC */
-    
+
     music = this.sound.add("game_music");
     music.play(muteKey, 1, true);
     music.setVolume(0.5); // change with config
@@ -194,7 +202,7 @@ var firstTick = true;
 
 function update(time, delta) {
     // Updates timer size
-    if(gameState.started){
+    if (gameState.started) {
         var new_width =
             parseInt(max_width) -
             ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
@@ -202,13 +210,12 @@ function update(time, delta) {
         cur_width = timer_bar.style.width;
     }
 
-    if(gameState.started && firstTick){
+    if (gameState.started && firstTick) {
         music.resume();
         firstTick = false;
     }
 
-
-    /* INPUT HANDLING  */   
+    /* INPUT HANDLING  */
     if (cursors.left.isDown) {
         let msg = { type: "input", action: "ML" };
         sendMessage(socket, msg);
