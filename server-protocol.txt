@@ -1,0 +1,40 @@
+// server game protocol
+
+
+// when connection starts with each client
+	server -> client
+		{
+			type: "init"
+			model: playerModel  // can be blue, green, etc
+			id: playerID
+		}
+			
+// server accepts following messages
+
+{type: 'start'}
+
+{type: 'input', action: ...}
+	action can be:
+		'MR': move right
+		'ML'
+		'MU'
+		'MD'
+		...
+
+
+// server sends following messages
+{type: 'update', players: []}
+	players is an array of player objects
+	player object must have following structure:
+	{
+		"id": id
+		"x": x
+		"y": y
+		"hp": hp
+		"xp": xp
+	}
+
+// server sends start packet to everyone, informing positions and players 
+{type: 'start', players: []}
+
+

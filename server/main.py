@@ -1,4 +1,7 @@
 import asyncio
+import json
+import threading
+import time
 import websockets
 from lobby import Lobby
 
@@ -10,32 +13,34 @@ async def handler(websocket):
     global client_id
     global clients
 
+    local_client_id = client_id
+
     # store user connection in an array
     clients[client_id] = websocket
     
-    # call asynchronously a function that will wait for the connection to be closed and delete the connection from the array
-    # this currently doesnt work, figure out another way because this blocks the current thread (maybe threads?)
-    """try:
-        await websocket.wait_closed()
-    finally:
-        del clients[client_id]"""
-    
-    print("1")
-    # send user ID before incrementing
-    #await websocket.send("HELLO-" + str(client_id))
-    print("2")
+    # add player to lobby and send response to client
+    response = lobbyObj.add_player(client_id)
     client_id += 1
-
+    await websocket.send(json.dumps(response))
+    
     # for each subsquent message received, process it
     async for message in websocket:
-        response = lobby.process_message(message)
-        print("3")
-        if (response != None and len(response) > 0): await websocket.send(message)
+        response = await lobbyObj.process_message(message, local_client_id)
+        if (response != None and len(response) > 0): await websocket.send(json.dumps(response))
+
 
 # ids -> array of ids (can be single)
 # message -> msg to be sent
-async def send_to_users(ids, message):
+async def send_to_users(ids, message, all=False):
     global clients
+
+    if (all == True):
+        broadcast_connections = []
+        for k,v in clients.items():
+            broadcast_connections.append(v)
+
+        websockets.broadcast(broadcast_connections, message)
+        return
 
     users_connections = []
     for id in ids:
@@ -48,6 +53,7 @@ async def main():
         await asyncio.Future()  # run forever
 
 
-lobby = Lobby(send_to_users)
+lobbyObj = Lobby(send_to_users)
+
 
 asyncio.run(main())

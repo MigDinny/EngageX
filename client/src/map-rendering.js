@@ -13,8 +13,6 @@ export const load = (c) => {
 };
 
 export const drawMap = (c, map) => {
-    console.log(map);
-
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_HEIGHT; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_WIDTH; col++) {
             var tmp_obj = c.add
@@ -33,14 +31,15 @@ export const drawMap = (c, map) => {
 };
 
 // Updates map. Also lights up squares that are adjacent to user
-export const updateMap = (c, map_array, playerPosition) => {
+export const updateMap = (map_array, gameState) => {
+    console.log(gameState);
     for (var line = 0; line < constants.MAP_NUMBER_BLOCKS_HEIGHT; line++) {
         for (var col = 0; col < constants.MAP_NUMBER_BLOCKS_WIDTH; col++) {
             if (
-                playerPosition[0] - col <= 2 &&
-                playerPosition[0] - col >= -2 &&
-                playerPosition[1] - line <= 2 &&
-                playerPosition[1] - line >= -2
+                gameState.players[gameState.playerID].position[0] - col <= 2 &&
+                gameState.players[gameState.playerID].position[0] - col >= -2 &&
+                gameState.players[gameState.playerID].position[1] - line <= 2 &&
+                gameState.players[gameState.playerID].position[1] - line >= -2
             )
                 map_array[line][col].state = 0;
             else map_array[line][col].state = 1;
@@ -58,9 +57,16 @@ export const updateMap = (c, map_array, playerPosition) => {
 };
 
 // updates player on the map based on player position
-export const updatePlayer = (c, playerPosition, playerObject) => {
-    playerObject.x =
-        playerPosition[0] * constants.BLOCK_SIZE_X - constants.BLOCK_SIZE_X / 2;
-    playerObject.y =
-        playerPosition[1] * constants.BLOCK_SIZE_Y - constants.BLOCK_SIZE_Y / 2;
+export const updatePlayers = (gameState, playerObjects) => {
+    for (var i = 0; i < gameState.players.length; i++) {
+        var player = gameState.players[i];
+        var pobj = playerObjects[player.gameObjectIndex];
+
+        pobj.x =
+            player.position[0] * constants.BLOCK_SIZE_X -
+            constants.BLOCK_SIZE_X / 2;
+        pobj.y =
+            player.position[1] * constants.BLOCK_SIZE_Y -
+            constants.BLOCK_SIZE_Y / 2;
+    }
 };
