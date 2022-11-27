@@ -306,7 +306,7 @@ function update(time, delta) {
 
     // send START packet
 
-    if (Phaser.Input.Keyboard.JustDown(startKey) && !gameState.started) {
+    if (Phaser.Input.Keyboard.JustDown(startKey)) {
         sendMessage(socket, { type: "start" });
     }
 
