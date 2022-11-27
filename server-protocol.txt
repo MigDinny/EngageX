@@ -16,9 +16,12 @@
 {type: 'input', action: ...}
 	action can be:
 		'MR': move right
-		'ML'
-		'MU'
-		'MD'
+		'ML': move left
+		'MU': move up
+		'MD': move down
+		'HV': harvest tile
+		'SO': sow adjacent tiles
+		'XP': convert hp into xp
 		...
 
 
@@ -32,7 +35,10 @@
 		"y": y
 		"hp": hp
 		"xp": xp
+		"food":  2D array that contains the food in the player's vision
 	}
+
+
 
 // server sends start packet to everyone, informing positions and players 
 {type: 'start', players: []}
