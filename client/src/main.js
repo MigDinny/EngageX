@@ -68,10 +68,10 @@ var rightKey;
 var upKey;
 var downKey;
 var muteKey;
-var startKey;
-var harvestKey;
-var sowKey;
-var saveXpKey;
+var sKey;
+var qKey;
+var wKey;
+var eKey;
 
 var bpm;
 var timerMovement;
@@ -144,10 +144,10 @@ function create() {
     upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
     downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
     muteKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
-    startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    harvestKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
-    sowKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    saveXpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    sKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+    wKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
 
     drawMap(this, map_array);
@@ -271,15 +271,15 @@ function update(time, delta) {
     
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
-            } else if (Phaser.Input.Keyboard.JustDown(harvestKey)){
+            } else if (Phaser.Input.Keyboard.JustDown(qKey)){
                 let msg = { type: "input", action: "HV" };
                 sendMessage(socket, msg);
     
-            } else if (Phaser.Input.Keyboard.JustDown(sowKey)){
+            } else if (Phaser.Input.Keyboard.JustDown(wKey)){
                 let msg = { type: "input", action: "SO" };
                 sendMessage(socket, msg);
     
-            } else if (Phaser.Input.Keyboard.JustDown(saveXpKey)){
+            } else if (Phaser.Input.Keyboard.JustDown(eKey)){
                 let msg = { type: "input", action: "XP" };
                 sendMessage(socket, msg);
             }
@@ -305,13 +305,7 @@ function update(time, delta) {
     }
 
     // send START packet
-
-    if (Phaser.Input.Keyboard.JustDown(startKey)) {
-        sendMessage(socket, { type: "start" });
-    }
-
-    // send START packet
-    if (Phaser.Input.Keyboard.JustDown(startKey)) {
+    if (Phaser.Input.Keyboard.JustDown(sKey)) {
         sendMessage(socket, { type: "start" });
     }
 
