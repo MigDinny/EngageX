@@ -51,15 +51,15 @@ var upKey;
 var downKey;
 var muteKey;
 
-var bpm = 120 / 4;
+var bpm = 128 / 2;
 var timerMovement;
 var incrementTimer;
 var startMusic;
 var musicOffset = 0;
 var cursors;
-var windowKeySize = 200;
+var windowKeySize = 250;
+var delayApply = 50;
 var keyPressed = 0;
-var delayApply = windowKeySize/2;
 var loadTime = 0;
 
 // UI Elements
@@ -76,7 +76,7 @@ function preload() {
 
 
     //this.load.audio("game_music", ["audio/Kevin_MacLeod___One-eyed_Maestro.mp3", "audio/Kevin_MacLeod___One-eyed_Maestro.ogg"]);
-    this.load.audio("game_music", ["audio/Undertale - Megalovania.mp3", "audio/Undertale - Megalovania.ogg"]);
+    this.load.audio("game_music", ["audio/Undertale-OST_015_sans.mp3", "audio/Undertale-OST_015_sans.ogg"]);
     
     load(this);
 }
@@ -147,6 +147,15 @@ function update(time, delta) {
     var new_width = parseInt(max_width) - (time % incrementTimer) * parseInt(max_width) / incrementTimer;
     timer_bar.style.width = new_width + "px";
     cur_width = timer_bar.style.width;
+    if(new_width < windowKeySize) {
+        timer_bar.style.backgroundColor = "yellow";
+    } else {
+        timer_bar.style.backgroundColor = "red";
+    }
+    //timer_bar.style.position = "relative";
+    //timer_bar.style.left = 50 - 50 * (new_width / parseInt(max_width)) + "%";
+    //timer_bar.style.right = 50 - 50 * (new_width / parseInt(max_width)) + "%";
+    //console.log(100 - 50 * (new_width / parseInt(max_width)) + "%");
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -182,6 +191,10 @@ function update(time, delta) {
 }
 
 function checkKeys(g, cursors, time) {
+    // ignore clicks from the first 25% of the time
+    if((time % incrementTimer) < (incrementTimer / 4)) {
+        return;
+    }
     if (keyPressed != 0) {
         return;
     }
