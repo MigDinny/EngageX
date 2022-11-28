@@ -4,6 +4,22 @@ import { load, drawMap, updatePlayers, updateMap } from "./map-rendering.js";
 import { updateHUD } from "./ui.js";
 import { sendMessage, interpretMessage } from "./socket.js";
 
+let params = new URL(document.location).searchParams;
+let ipAddress = params.get("ip");
+let port = params.get("port");
+let username = params.get("username");
+
+if (
+    ipAddress == null ||
+    username == null ||
+    port == null ||
+    ipAddress === "" ||
+    port === "" ||
+    username === ""
+) {
+    location.replace("/");
+}
+
 /**
  * Game Config Object
  */
@@ -108,7 +124,7 @@ var skill_elems = [
 /**
  * Websocket to communicate with the server.
  */
-const socket = new WebSocket("ws://192.168.1.122:8765");
+const socket = new WebSocket("ws://" + ipAddress + ":" + port);
 
 /**
  * Socket onMessage event. This function gets called whenever a message is received from the server.
