@@ -31,6 +31,7 @@ export const interpretMessage = (c, gameState, socket, message) => {
                     model: arr[i].model,
                     hp: arr[i].hp,
                     xp: arr[i].xp,
+                    foodArr: arr[i].food,
                     gameObjectIndex: gameState.gameObjectIndexCounter++,
                 };
             }
@@ -42,6 +43,9 @@ export const interpretMessage = (c, gameState, socket, message) => {
             var arr = event.players;
             for (let i = 0; i < arr.length; i++) {
                 gameState.players[arr[i].id].position = [arr[i].x, arr[i].y];
+                gameState.players[arr[i].id].hp = arr[i].hp;
+                gameState.players[arr[i].id].xp = arr[i].xp;
+                gameState.players[arr[i].id].foodArr = arr[i].food;
             }
             break;
 
