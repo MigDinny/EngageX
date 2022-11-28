@@ -77,6 +77,7 @@ var bpm;
 var timerMovement;
 var incrementTimer;
 var cursors;
+var windowKeySize = 200;
 
 var direction = "";
 var action = "";
@@ -273,6 +274,12 @@ function update(time, delta) {
 
             timer_bar.style.width = new_width + "px";
             cur_width = timer_bar.style.width;
+
+            if(new_width < windowKeySize) {
+                timer_bar.style.backgroundColor = "yellow";
+            } else {
+                timer_bar.style.backgroundColor = "red";
+            }
 
             /* INPUT HANDLING  */
             if (cursors.left.isDown) {
