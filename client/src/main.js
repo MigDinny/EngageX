@@ -1,6 +1,7 @@
 //import * as utils from "../lib/utils";
 import * as constants from "./constants.js";
 import { load, drawMap, updatePlayers, updateMap } from "./map-rendering.js";
+import { updateHUD } from "./ui.js";
 import { sendMessage, interpretMessage } from "./socket.js";
 
 /**
@@ -49,7 +50,6 @@ var map_array = Array.from(Array(constants.MAP_NUMBER_BLOCKS_HEIGHT), (_) =>
 var gameState = {
     playerID: 0,
     players: [],
-    playerObjects: [],
     started: false,
     gameObjectIndexCounter: 0,
 };
@@ -93,6 +93,16 @@ var music;
 var timer_bar = document.getElementById("timer-bar");
 var max_width = timer_bar.style.width;
 var cur_width = timer_bar.style.width;
+
+var skill_elems = [
+    document.getElementById("harvest"),
+    document.getElementById("sow"),
+    document.getElementById("xp"),
+    document.getElementById("fight"),
+    document.getElementById("share"),
+    document.getElementById("steal"),
+    document.getElementById("flee"),
+];
 
 /**
  * Websocket to communicate with the server.
@@ -149,10 +159,7 @@ function create() {
     wKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
-
     drawMap(this, map_array);
-
-    
 
     /** ANIMATIONS  */
     this.anims.create({
@@ -191,30 +198,50 @@ function create() {
     }
 
     /** UI Text*/
-    hpText = this.add.text(0, constants.MAP_NUMBER_BLOCKS_HEIGHT* (constants.BLOCK_SIZE_Y/constants.SCALE - 2), "- Current HP:", {
-        font: "15px Arial", 
-        align: "center",
-        color: '#8B0000'
-    });
-    xpText = this.add.text(0, constants.MAP_NUMBER_BLOCKS_HEIGHT* (constants.BLOCK_SIZE_Y/constants.SCALE - 1), "- Current XP:" , {
-        font: "15px Arial", 
-        align: "center",
-        color: 	"#191970",
-    });
-    gameOverText =  this.add.text(constants.MAP_NUMBER_BLOCKS_WIDTH* (constants.BLOCK_SIZE_X/constants.SCALE - 6) / 2, constants.MAP_NUMBER_BLOCKS_HEIGHT* (constants.BLOCK_SIZE_Y/constants.SCALE - 1) / 2, "GAME OVER" , {
-        font: "40px Arial", 
-        align: "center",
-        color: 	"#000000",
-    });
+    hpText = this.add.text(
+        0,
+        constants.MAP_NUMBER_BLOCKS_HEIGHT *
+            (constants.BLOCK_SIZE_Y / constants.SCALE - 2),
+        "- Current HP:",
+        {
+            font: "15px Arial",
+            align: "center",
+            color: "#8B0000",
+        }
+    );
+    xpText = this.add.text(
+        0,
+        constants.MAP_NUMBER_BLOCKS_HEIGHT *
+            (constants.BLOCK_SIZE_Y / constants.SCALE - 1),
+        "- Current XP:",
+        {
+            font: "15px Arial",
+            align: "center",
+            color: "#191970",
+        }
+    );
+    gameOverText = this.add.text(
+        (constants.MAP_NUMBER_BLOCKS_WIDTH *
+            (constants.BLOCK_SIZE_X / constants.SCALE - 6)) /
+            2,
+        (constants.MAP_NUMBER_BLOCKS_HEIGHT *
+            (constants.BLOCK_SIZE_Y / constants.SCALE - 1)) /
+            2,
+        "GAME OVER",
+        {
+            font: "40px Arial",
+            align: "center",
+            color: "#000000",
+        }
+    );
 
-    gameOverText.setBackgroundColor('#696969');
+    gameOverText.setBackgroundColor("#696969");
     gameOverText.visible = false;
-    hpText.setBackgroundColor('#FA8072');
-    xpText.setBackgroundColor('#87CEEB'); 
-
+    hpText.setBackgroundColor("#FA8072");
+    xpText.setBackgroundColor("#87CEEB");
 
     /** MUSIC */
-    
+
     music = this.sound.add("game_music");
     music.play(muteKey, 1, true);
     music.setVolume(0.5); // change with config
@@ -227,63 +254,63 @@ function create() {
 var firstTick = true;
 
 function update(time, delta) {
-    
-    if(gameState.started){
-
+    if (gameState.started) {
         // updates xp and hp texts
-        hpText.setText("Current HP: " + gameState.players[gameState.playerID].hp)
-        xpText.setText("Current XP: " + gameState.players[gameState.playerID].xp)
+        hpText.setText(
+            "Current HP: " + gameState.players[gameState.playerID].hp
+        );
+        xpText.setText(
+            "Current XP: " + gameState.players[gameState.playerID].xp
+        );
 
-        // checks if player is still alive 
-        if( gameState.players[gameState.playerID].hp > 0){
-            
+        // checks if player is still alive
+        if (gameState.players[gameState.playerID].hp > 0) {
             // updates timer size
             var new_width =
                 parseInt(max_width) -
-                ((time % incrementTimer) * parseInt(max_width)) / incrementTimer;
-            
-                timer_bar.style.width = new_width + "px";
+                ((time % incrementTimer) * parseInt(max_width)) /
+                    incrementTimer;
+
+            timer_bar.style.width = new_width + "px";
             cur_width = timer_bar.style.width;
-            
-            /* INPUT HANDLING  */   
+
+            /* INPUT HANDLING  */
             if (cursors.left.isDown) {
                 let msg = { type: "input", action: "ML" };
                 sendMessage(socket, msg);
-    
+
                 // Pause needs to be here to cancel old animations
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].anims.play('horizontal').chain('idle');
             } else if (cursors.right.isDown) {
                 let msg = { type: "input", action: "MR" };
                 sendMessage(socket, msg);
-    
+
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].anims.play("horizontal").chain("idle");
             } else if (cursors.up.isDown) {
                 let msg = { type: "input", action: "MU" };
                 sendMessage(socket, msg);
-    
+
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].play('vertical').chain('idle');
             } else if (cursors.down.isDown) {
                 let msg = { type: "input", action: "MD" };
                 sendMessage(socket, msg);
-    
+
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].anims.play('vertical').chain('idle');
-            } else if (Phaser.Input.Keyboard.JustDown(qKey)){
+            } else if (Phaser.Input.Keyboard.JustDown(qKey)) {
                 let msg = { type: "input", action: "HV" };
                 sendMessage(socket, msg);
-    
-            } else if (Phaser.Input.Keyboard.JustDown(wKey)){
+            } else if (Phaser.Input.Keyboard.JustDown(wKey)) {
                 let msg = { type: "input", action: "SO" };
                 sendMessage(socket, msg);
-    
-            } else if (Phaser.Input.Keyboard.JustDown(eKey)){
+            } else if (Phaser.Input.Keyboard.JustDown(eKey)) {
                 let msg = { type: "input", action: "XP" };
                 sendMessage(socket, msg);
             }
-    
+
             if (Phaser.Input.Keyboard.JustDown(muteKey)) {
                 if (music.isPlaying) {
                     music.pause();
@@ -293,13 +320,13 @@ function update(time, delta) {
             }
         }
         // player has died
-        else{
+        else {
             gameOverText.visible = true;
         }
     }
 
     // only start music when first update packet is sent
-    if(gameState.started && firstTick){
+    if (gameState.started && firstTick) {
         music.resume();
         firstTick = false;
     }
@@ -314,4 +341,6 @@ function update(time, delta) {
 
     // update player according to its position
     if (gameState.started) updatePlayers(gameState, playerObjects);
+
+    if (gameState.started) updateHUD(gameState);
 }
