@@ -3,6 +3,7 @@ import json
 import threading
 import time
 import websockets
+import socket
 from lobby import Lobby
 
 clients = {}
@@ -49,7 +50,9 @@ async def send_to_users(ids, message, all=False):
     websockets.broadcast(users_connections, message)
 
 async def main():
-    async with websockets.serve(handler, "localhost", 8765):
+    ip = socket.gethostbyname(socket.gethostname())
+    print("Serving websocket server at " + ip + ":8765")
+    async with websockets.serve(handler, ip, 8765):
         await asyncio.Future()  # run forever
 
 

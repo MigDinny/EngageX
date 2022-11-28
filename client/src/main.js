@@ -108,7 +108,7 @@ var skill_elems = [
 /**
  * Websocket to communicate with the server.
  */
-const socket = new WebSocket("ws://localhost:8765");
+const socket = new WebSocket("ws://192.168.1.122:8765");
 
 /**
  * Socket onMessage event. This function gets called whenever a message is received from the server.
@@ -275,7 +275,7 @@ function update(time, delta) {
             timer_bar.style.width = new_width + "px";
             cur_width = timer_bar.style.width;
 
-            if(new_width < windowKeySize) {
+            if (new_width < windowKeySize) {
                 timer_bar.style.backgroundColor = "yellow";
             } else {
                 timer_bar.style.backgroundColor = "red";
