@@ -58,56 +58,58 @@
                     border-color: antiquewhite;
                 "
             >
-                <div id="username" style="padding-top: 90px">
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        name="username"
-                        style="
-                            text-align: center;
-                            background-color: beige;
-                            width: 65%;
-                            font-size: xx-large;
-                            padding: 10px;
-                        "
-                        required
-                    />
-                </div>
-                <div id="ip" style="padding-top: 40px">
-                    <input
-                        type="text"
-                        placeholder="Server IP"
-                        name="ip"
-                        style="
-                            text-align: center;
-                            background-color: beige;
-                            width: 60%;
-                            font-size: x-large;
-                            padding: 10px;
-                        "
-                        required
-                    />
-                </div>
-                <div id="port" style="padding-top: 40px">
-                    <input
-                        id="port-input"
-                        type="number"
-                        placeholder="Server Port"
-                        name="port"
-                        style="
-                            text-align: center;
-                            background-color: beige;
-                            width: 55%;
-                            font-size: large;
-                            padding: 10px;
-                        "
-                        required
-                    />
-                </div>
-                <!--<div id="how-to-play" style="padding-top: 40px"></div>-->
-                <div id="connect" style="padding-top: 50px">
-                    <button class="button button1">Connect</button>
-                </div>
+                <form action="game.html">
+                    <div id="username" style="padding-top: 90px">
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            name="username"
+                            style="
+                                text-align: center;
+                                background-color: beige;
+                                width: 65%;
+                                font-size: xx-large;
+                                padding: 10px;
+                            "
+                            required
+                        />
+                    </div>
+                    <div id="ip" style="padding-top: 40px">
+                        <input
+                            type="text"
+                            placeholder="Server IP"
+                            name="ip"
+                            style="
+                                text-align: center;
+                                background-color: beige;
+                                width: 60%;
+                                font-size: x-large;
+                                padding: 10px;
+                            "
+                            required
+                        />
+                    </div>
+                    <div id="port" style="padding-top: 40px">
+                        <input
+                            id="port-input"
+                            type="number"
+                            placeholder="Server Port"
+                            name="port"
+                            style="
+                                text-align: center;
+                                background-color: beige;
+                                width: 55%;
+                                font-size: large;
+                                padding: 10px;
+                            "
+                            required
+                        />
+                    </div>
+                    <!--<div id="how-to-play" style="padding-top: 40px"></div>-->
+                    <div id="connect" style="padding-top: 50px">
+                        <input type="submit" class="button button1">Connect</input>
+                    </div>
+                </form>
             </div>
         </div>
     </body>
