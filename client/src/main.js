@@ -4,6 +4,22 @@ import { load, drawMap, updatePlayers, updateMap } from "./map-rendering.js";
 import { updateHUD } from "./ui.js";
 import { sendMessage, interpretMessage } from "./socket.js";
 
+let params = new URL(document.location).searchParams;
+let ipAddress = params.get("ip");
+let port = params.get("port");
+let username = params.get("username");
+
+if (
+    ipAddress == null ||
+    username == null ||
+    port == null ||
+    ipAddress === "" ||
+    port === "" ||
+    username === ""
+) {
+    location.replace("/");
+}
+
 /**
  * Game Config Object
  */
@@ -64,21 +80,21 @@ var music_config = {
     detune: 0,
     seek: 0,
     loop: true,
-    delay: 0
-}
+    delay: 0,
+};
 
 /**
  * Sound effects config
  */
- var sound_effect_config = {
+var sound_effect_config = {
     mute: false,
     volume: 0.3,
     rate: 1,
     detune: 0,
     seek: 0,
     loop: false,
-    delay: 0
-}
+    delay: 0,
+};
 
 var char_color = "blue"; // Color of slime. Make this change variable be attributed by server in future
 
@@ -134,7 +150,7 @@ var skill_elems = [
 /**
  * Websocket to communicate with the server.
  */
-const socket = new WebSocket("ws://172.31.64.1:8765");
+const socket = new WebSocket("ws://" + ipAddress + ":" + port);
 
 /**
  * Socket onMessage event. This function gets called whenever a message is received from the server.
@@ -317,7 +333,7 @@ function update(time, delta) {
                     incrementTimer;
 
             // allows new sound effect to be played
-            if(parseFloat(timer_bar.style.width) < new_width) {
+            if (parseFloat(timer_bar.style.width) < new_width) {
                 sound_effect_played = false;
             }
 
@@ -330,13 +346,14 @@ function update(time, delta) {
                 timer_bar.style.backgroundColor = "red";
             }
 
-
             /* INPUT HANDLING  */
             if (cursors.left.isDown) {
                 let msg = { type: "input", action: "ML" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("move_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("move_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
 
@@ -346,8 +363,10 @@ function update(time, delta) {
             } else if (cursors.right.isDown) {
                 let msg = { type: "input", action: "MR" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("move_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("move_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
 
@@ -356,8 +375,10 @@ function update(time, delta) {
             } else if (cursors.up.isDown) {
                 let msg = { type: "input", action: "MU" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("move_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("move_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
 
@@ -366,8 +387,10 @@ function update(time, delta) {
             } else if (cursors.down.isDown) {
                 let msg = { type: "input", action: "MD" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("move_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("move_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
 
@@ -376,22 +399,28 @@ function update(time, delta) {
             } else if (Phaser.Input.Keyboard.JustDown(qKey)) {
                 let msg = { type: "input", action: "HV" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("harvest_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("harvest_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
             } else if (Phaser.Input.Keyboard.JustDown(wKey)) {
                 let msg = { type: "input", action: "SO" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("sow_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("sow_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
             } else if (Phaser.Input.Keyboard.JustDown(eKey)) {
                 let msg = { type: "input", action: "XP" };
                 sendMessage(socket, msg);
-                if(!sound_effect_played) {
-                    this.sound.add("save_sound_effect").play(sound_effect_config);
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("save_sound_effect")
+                        .play(sound_effect_config);
                     sound_effect_played = true;
                 }
             }
