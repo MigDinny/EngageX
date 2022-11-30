@@ -3,8 +3,8 @@
 import http.server
 import socketserver
 
-HOST = "localhost"
-PORT = 8080
+HOST = "172.31.64.1"
+PORT = 8765
 
 
 class HttpRequestHandler(http.server.SimpleHTTPRequestHandler):
