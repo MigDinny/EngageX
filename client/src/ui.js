@@ -67,6 +67,6 @@ export const updateHUD = (gameState) => {
     setHP(gameState.players[gameState.playerID].hp);
     setXP(
         gameState.players[gameState.playerID].xp,
-        gameState.players[gameState.playerID].xp / MAX_XP
+        (gameState.players[gameState.playerID].xp / MAX_XP) * 100
     );
 };
