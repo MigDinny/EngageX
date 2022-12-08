@@ -3,7 +3,7 @@
 import http.server
 import socketserver
 
-HOST = "172.31.64.1"
+HOST = "localhost"
 PORT = 8765
 
 
