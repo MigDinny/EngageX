@@ -2,6 +2,7 @@ import json
 import threading
 import time
 import asyncio
+import datetime
 
 class Player:
 
@@ -28,7 +29,7 @@ class Lobby:
     initial_player_positions = [[1,1], [mapDimensions[0], 1], [1, mapDimensions[1]], [mapDimensions[0], mapDimensions[1]]]
     tick_time_ms = 1000
     foodMap = None
-    tick_time_sec = 1
+    tick_time_sec = (60) / (100)
     charmodels = ["blue", "green"] + 500 * ["blue"] #Temporary. So we can have 500 charmodels before it crashes (we need to delete sockets that exit!!)
 
     # functions
@@ -181,6 +182,8 @@ class Lobby:
 
     async def __tick__(self):
         while (not self.endTick):
+            a = datetime.datetime.now()
+
             # process game tick
             self.tick_counter += 1
             print("TICK: " + str(self.tick_counter))
@@ -199,4 +202,8 @@ class Lobby:
             # clear input boolean
             self.playersInputBoolean = [False, False, False, False]
             
-            time.sleep(self.tick_time_sec)
+
+            b = datetime.datetime.now()
+            delta = (b-a)
+            print(delta.total_seconds())
+            time.sleep(self.tick_time_sec - delta.total_seconds())
