@@ -106,13 +106,13 @@ class Lobby:
     def __movement__(self, direction, id):
         match direction:
             case "right":
-                if (self.players[id].x < self.mapDimensions[0]): self.players[id].x += 1
+                if (self.players[id].x < self.mapDimensions[0]-1): self.players[id].x += 1
             case "left":
-                if (self.players[id].x > 1):                     self.players[id].x -= 1
+                if (self.players[id].x > 0):                     self.players[id].x -= 1
             case "up":
-                if (self.players[id].y > 1):                     self.players[id].y -= 1
+                if (self.players[id].y > 0):                     self.players[id].y -= 1
             case "down":
-                if (self.players[id].y < self.mapDimensions[1]): self.players[id].y += 1
+                if (self.players[id].y < self.mapDimensions[1]-1): self.players[id].y += 1
         
         self.players[id].hp -= 1
     
@@ -126,6 +126,10 @@ class Lobby:
     def __harvest__(self, id):
         if(self.foodMap[self.players[id].y][self.players[id].x] == 1): 
             self.players[id].hp += 30
+
+            # HP cap
+            if (self.players[id].hp > 100): self.players[id].hp = 100
+
             self.foodMap[self.players[id].y][self.players[id].x] = 0
     
     # Populates tiles around player with food
