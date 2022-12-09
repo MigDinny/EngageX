@@ -347,7 +347,7 @@ function update(time, delta) {
             }
 
             /* INPUT HANDLING  */
-            if (cursors.left.isDown) {
+            if (Phaser.Input.Keyboard.JustDown(leftKey)) {
                 let msg = { type: "input", action: "ML" };
                 sendMessage(socket, msg);
                 if (!sound_effect_played) {
@@ -360,7 +360,7 @@ function update(time, delta) {
                 // Pause needs to be here to cancel old animations
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].anims.play('horizontal').chain('idle');
-            } else if (cursors.right.isDown) {
+            } else if (Phaser.Input.Keyboard.JustDown(rightKey)) {
                 let msg = { type: "input", action: "MR" };
                 sendMessage(socket, msg);
                 if (!sound_effect_played) {
@@ -372,7 +372,7 @@ function update(time, delta) {
 
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].anims.play("horizontal").chain("idle");
-            } else if (cursors.up.isDown) {
+            } else if (Phaser.Input.Keyboard.JustDown(upKey)) {
                 let msg = { type: "input", action: "MU" };
                 sendMessage(socket, msg);
                 if (!sound_effect_played) {
@@ -384,7 +384,7 @@ function update(time, delta) {
 
                 // playerObjects[gameState.playerID].anims.pause();
                 // playerObjects[gameState.playerID].play('vertical').chain('idle');
-            } else if (cursors.down.isDown) {
+            } else if (Phaser.Input.Keyboard.JustDown(downKey)) {
                 let msg = { type: "input", action: "MD" };
                 sendMessage(socket, msg);
                 if (!sound_effect_played) {

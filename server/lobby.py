@@ -42,7 +42,8 @@ class Lobby:
     
     gameStarted = False
     endTick = False
-    
+    maxXP = 250
+
     ## CONSTRUCTOR
     def __init__(self, sender_function):
         self.send_to_users = sender_function
@@ -121,6 +122,11 @@ class Lobby:
         lostHp = self.players[id].hp // 2
         self.players[id].hp -= lostHp
         self.players[id].xp += lostHp
+
+        if (self.players[id].xp > self.maxXP): 
+            self.players[id].xp = self.maxXP
+
+            #TODO SEND ENDGAME PACKET
 
     # Player harvest current cell. Gains 30 hp (for now)
     def __harvest__(self, id):
