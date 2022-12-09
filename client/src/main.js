@@ -305,7 +305,7 @@ function create() {
 
     music = this.sound.add("game_music");
     music.play(music_config);
-    bpm = 100;
+    bpm = 128;
     timerMovement = 0;
     incrementTimer = (60 * 1000) / bpm;
     music.pause();

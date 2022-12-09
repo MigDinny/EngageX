@@ -29,7 +29,7 @@ class Lobby:
     initial_player_positions = [[1,1], [mapDimensions[0], 1], [1, mapDimensions[1]], [mapDimensions[0], mapDimensions[1]]]
     tick_time_ms = 1000
     foodMap = None
-    tick_time_sec = (60) / (100)
+    tick_time_sec = (60) / (128)
     charmodels = ["blue", "green"] + 500 * ["blue"] #Temporary. So we can have 500 charmodels before it crashes (we need to delete sockets that exit!!)
 
     # functions

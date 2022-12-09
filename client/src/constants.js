@@ -11,9 +11,9 @@ export const BLOCK_SIZE_Y = 16 * SCALE;
 
 export const INIT_PLAYER_POSITIONS = [
     [1, 1],
-    [20, 1],
-    [1, 10],
-    [20, 10],
+    [19, 1],
+    [1, 9],
+    [19, 9],
 ];
 
 // enabled skill src paths
