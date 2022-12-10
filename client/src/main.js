@@ -67,7 +67,9 @@ var gameState = {
     playerID: 0,
     players: [],
     started: false,
+    ended: false,
     gameObjectIndexCounter: 0,
+    
 };
 
 /**
@@ -124,9 +126,9 @@ var windowKeySize = 200;
 var direction = "";
 var action = "";
 
-var hpText;
-var xpText;
+
 var gameOverText;
+var gameEndedText;
 
 var music;
 
@@ -258,29 +260,22 @@ function create() {
         );
     }
 
+    gameEndedText = this.add.text(
+        (constants.MAP_NUMBER_BLOCKS_WIDTH *
+            (constants.BLOCK_SIZE_X / constants.SCALE - 6)) /
+            2,
+        (constants.MAP_NUMBER_BLOCKS_HEIGHT *
+            (constants.BLOCK_SIZE_Y / constants.SCALE - 1)) /
+            2,
+        "YOU ENDED X PLACE",
+        {
+            font: "20px Arial",
+            align: "center",
+            color: "#000000",
+        }
+    );
+
     /** UI Text*/
-    hpText = this.add.text(
-        0,
-        constants.MAP_NUMBER_BLOCKS_HEIGHT *
-            (constants.BLOCK_SIZE_Y / constants.SCALE - 2),
-        "- Current HP:",
-        {
-            font: "15px Arial",
-            align: "center",
-            color: "#8B0000",
-        }
-    );
-    xpText = this.add.text(
-        0,
-        constants.MAP_NUMBER_BLOCKS_HEIGHT *
-            (constants.BLOCK_SIZE_Y / constants.SCALE - 1),
-        "- Current XP:",
-        {
-            font: "15px Arial",
-            align: "center",
-            color: "#191970",
-        }
-    );
     gameOverText = this.add.text(
         (constants.MAP_NUMBER_BLOCKS_WIDTH *
             (constants.BLOCK_SIZE_X / constants.SCALE - 6)) /
@@ -296,10 +291,11 @@ function create() {
         }
     );
 
+    gameEndedText.setBackgroundColor("#FFFFCC");
+    gameEndedText.visible = false;
     gameOverText.setBackgroundColor("#696969");
     gameOverText.visible = false;
-    hpText.setBackgroundColor("#FA8072");
-    xpText.setBackgroundColor("#87CEEB");
+
 
     /** MUSIC */
 
@@ -311,18 +307,30 @@ function create() {
     music.pause();
 }
 
+function endScoreTextUpdate(){
+    let count = 1;
+
+    for (let i = 0; i < gameState.players.length; i++) {
+        if(i != gameState.playerID){
+            if(gameState.players[i].xp > gameState.players[gameState.playerID].xp){
+                count++;
+            }
+        }
+    }
+
+    if( count == 1){
+        gameEndedText.text = "Game ended! Congratulations, you placed " + count + "st";
+    }else{
+        gameEndedText.text = "Game ended! You placed " + count + "th";
+    } 
+   
+
+}
 var firstTick = true;
 var sound_effect_played = false;
 
 function update(time, delta) {
-    if (gameState.started) {
-        // updates xp and hp texts
-        hpText.setText(
-            "Current HP: " + gameState.players[gameState.playerID].hp
-        );
-        xpText.setText(
-            "Current XP: " + gameState.players[gameState.playerID].xp
-        );
+    if (gameState.started && !gameState.ended) {
 
         // checks if player is still alive
         if (gameState.players[gameState.playerID].hp > 0) {
@@ -443,6 +451,11 @@ function update(time, delta) {
     if (gameState.started && firstTick) {
         music.resume();
         firstTick = false;
+    }
+
+    if(gameState.ended){
+        endScoreTextUpdate();
+        gameEndedText.visible = true;
     }
 
     // send START packet

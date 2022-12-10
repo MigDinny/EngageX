@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" /> 
+    <link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet'>
+</head>
+<body>
+    <body style="background-color: black" >
+ 
+        <!-- OVERLAY for the MAIN MENU -->
+        <div
+            
+
+            id="overlay"
+            style="
+                top: 0;
+                left: 0;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background-image: url('img/mainMenu/background.png');
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            "
+        >
+            <div
+                    id="menu"
+                    style="
+                        width: 600px;
+                        height: 600px;
+                        text-align: center;
+                        border-color: antiquewhite;
+                    "
+                >
+
+                <div class="borderexample">
+
+                    <u><h1>RULES</h1></u>
+                    <p> The objective of this game is to be the first player to achieve 250 XP points.</p>
+                    <br>
+                    
+                    <p> To achieve this, use WASD to move. There are 3 main abilities:</p>
+                        
+                        <li>&ltQ&gt Harvest: Eat grass in current cell for +40 HP</li>
+                        <li>&ltW&gt Sow: Grow grass in adjacent cells for -33% HP</li>
+                        <li>&ltE&gt Save XP: Lose 50%HP.Lost HP converted into XP</li>
+                        
+                    <br>
+                    <p>If you are in the same cell as another player, you enter battle mode and gain new abiliteis:</p>
+                        <li>&ltQ&gt Fight: Oponent loses 25HP </li>
+                        <li>&ltW&gt Steal: 50% chance to steal 25% of oponnents XP. If fails XP gains 25% of your XP</li>
+                        <li>&ltE&gt Share: Both players share 50% of their HP</li>
+                        <li>&ltR&gt Flee: Lose 33%HP. Move 3 squares away</li>
+
+                    <br>
+                    <p>If you lose all your HP you die, meaning you cannot move until the game ends.</p>
+                    <br>
+                    <br>
+                    <p>You now know the rules. Good luck and have fun!</p>
+                </div>
+
+                <div class="container">
+                    <a href= "index.html" class="btn">Back</a>
+                </div>
+            </div>
+    </div>
+</body>
+</html>
