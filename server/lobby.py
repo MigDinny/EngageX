@@ -40,6 +40,7 @@ class Lobby:
     players = {} # players dictionary of objects
     playersInputBoolean = [False, False, False, False] # checks if player inputted anything this current tick
     
+    gameEnded = False
     gameStarted = False
     endTick = False
     maxXP = 250
@@ -123,9 +124,11 @@ class Lobby:
         self.players[id].hp -= lostHp
         self.players[id].xp += lostHp
 
-        if (self.players[id].xp > self.maxXP): 
+        if (self.players[id].xp >= self.maxXP): 
             self.players[id].xp = self.maxXP
 
+            self.gameEnded = True
+            print(self.players)
             #TODO SEND ENDGAME PACKET
 
     # Player harvest current cell. Gains 30 hp (for now)
@@ -198,22 +201,32 @@ class Lobby:
             self.tick_counter += 1
             print("TICK: " + str(self.tick_counter))
 
-            # build game state to be sent
-            players_list = []
-            for (k,v) in self.players.items():
-                v.foodArr = self.__getFoodArr__(v)
-                players_list.append(v.toJSONable())
+            if(not self.gameEnded):
+                # build game state to be sent
+                players_list = []
+                for (k,v) in self.players.items():
+                    v.foodArr = self.__getFoodArr__(v)
+                    players_list.append(v.toJSONable())
 
-            gameState = {"type": "update", "tick": self.tick_counter, "players": players_list}
+                gameState = {"type": "update", "tick": self.tick_counter, "players": players_list}
 
-            # send game state to users
-            await self.send_to_users([], json.dumps(gameState), all=True)
+                # send game state to users
+                await self.send_to_users([], json.dumps(gameState), all=True)
 
-            # clear input boolean
-            self.playersInputBoolean = [False, False, False, False]
+                # clear input boolean
+                self.playersInputBoolean = [False, False, False, False]
+                
+
+                b = datetime.datetime.now()
+                delta = (b-a)
+                print(delta.total_seconds())
+                time.sleep(self.tick_time_sec - delta.total_seconds())
             
-
-            b = datetime.datetime.now()
-            delta = (b-a)
-            print(delta.total_seconds())
-            time.sleep(self.tick_time_sec - delta.total_seconds())
+            else:
+                players_list = []
+                for (k,v) in self.players.items():
+                    players_list.append(v.toJSONable())
+                    
+                gameState = {"type": "endGame", "players": players_list}
+                await self.send_to_users([], json.dumps(gameState), all=True)
+                exit()

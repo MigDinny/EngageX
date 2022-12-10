@@ -62,7 +62,15 @@ export const interpretMessage = (c, gameState, socket, message) => {
         case "ready":
             return event.id;
             break;
-
+        
+        case "endGame":
+            var arr = event.players;
+            for (let i = 0; i < arr.length; i++) {
+                gameState.players[arr[i].id].hp = arr[i].hp;
+                gameState.players[arr[i].id].xp = arr[i].xp;
+            }
+            gameState.ended = true;
+            break;
         default:
             throw new Error(`Unsupported event type: ${event.type}.`);
     }
