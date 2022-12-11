@@ -1,16 +1,43 @@
 import * as constants from "./constants.js";
 
+
+
+
+
+
+
+var texture_map = [[14,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,15],
+                   [9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,5,0,11],
+                   [9,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,7,8,0,0,0,0,11],
+                   [9,7,7,1,7,7,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,8,7,8,7,0,0,0,0,11],
+                   [9,7,1,8,1,7,0,0,0,0,0,7,0,7,0,0,0,0,0,0,0,7,8,8,7,0,0,0,0,11],
+                   [9,7,7,1,7,7,0,0,0,0,7,8,7,8,7,0,0,0,0,0,0,8,7,8,7,0,0,0,1,11],
+                   [9,7,7,7,7,7,0,0,0,0,7,8,8,8,7,0,0,0,0,0,0,7,8,7,8,0,0,0,0,11],
+                   [9,0,0,0,0,0,0,0,0,0,0,7,8,7,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,11],
+                   [9,0,0,0,0,8,0,0,0,0,0,0,7,0,0,7,0,0,0,0,0,0,0,0,0,3,0,3,0,11],
+                   [9,0,0,0,0,8,0,0,0,0,0,0,0,0,7,8,7,0,0,0,3,0,0,0,0,6,0,6,0,11],
+                   [9,0,0,4,5,8,5,0,0,0,0,0,0,7,8,1,8,7,0,0,0,0,0,0,0,0,0,0,0,11],
+                   [9,0,0,0,0,5,0,0,0,0,0,0,7,8,1,1,1,8,7,0,0,0,0,0,0,7,0,7,0,11],
+                   [9,1,0,0,0,8,0,1,0,0,0,0,0,7,8,1,8,7,0,0,0,0,0,0,0,7,7,7,0,11],
+                   [9,0,0,0,0,0,0,0,0,0,0,0,3,0,7,8,7,0,0,0,0,6,0,0,0,0,0,0,0,11],
+                   [13,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,16]];
+
 export const load = (c) => {
     c.load.spritesheet("slime", "img/slimeblue.png", {
         frameWidth: 32,
         frameHeight: 32,
     });
 
-    c.load.image("grass-block", "img/grass_vision.png");
+    for(let i = 0; i < 17; i++){
+        c.load.image("grass-block" + i, "img/normal_grass" + i + ".png");
+    }
+    
     c.load.image("grass-block-no-vision", "img/no_vision_grass.png");
-    c.load.image("food-block", "img/tall_grass.png");
-
+    c.load.image("food-block", "img/grown_grass.png");
+    
     c.load.setBaseURL("");
+
+
 };
 
 export const drawMap = (c, map) => {
@@ -20,7 +47,7 @@ export const drawMap = (c, map) => {
                 .image(
                     col * constants.BLOCK_SIZE_X,
                     line * constants.BLOCK_SIZE_Y,
-                    "grass-block"
+                    "grass-block0"
                 )
                 .setOrigin(0, 0)
                 .setScale(constants.SCALE);
@@ -47,7 +74,7 @@ export const updateMap = (map_array, gameState) => {
 
             switch (map_array[line][col].state) {
                 case 0:
-                    map_array[line][col].setTexture("grass-block");
+                    map_array[line][col].setTexture("grass-block" + texture_map[line][col]);
                     break;
                 case 1:
                     map_array[line][col].setTexture("grass-block-no-vision");
@@ -71,7 +98,7 @@ export const updateMap = (map_array, gameState) => {
                 case -1:
                     continue;
                 case 0:
-                    map_array[y_pos][x_pos].setTexture("grass-block");
+                    map_array[y_pos][x_pos].setTexture("grass-block" + texture_map[y_pos][x_pos]);
                     break;
                 case 1:
                     map_array[y_pos][x_pos].setTexture("food-block");

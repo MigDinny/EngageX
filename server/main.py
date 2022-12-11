@@ -16,7 +16,7 @@ async def handler(websocket):
 
     local_client_id = client_id
 
-    # store user connection in an array
+    # store user connection in an array 
     clients[client_id] = websocket
     
     # add player to lobby and send response to client
