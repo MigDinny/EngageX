@@ -26,7 +26,7 @@ class Lobby:
     board_height = 15
     vision_range = 3
     mapDimensions = [board_width, board_height] # 40 columns, 20 rows
-    initial_player_positions = [[1,1], [mapDimensions[0], 1], [1, mapDimensions[1]], [mapDimensions[0], mapDimensions[1]]]
+    initial_player_positions = [[0,0], [mapDimensions[0]-1, 0], [0, mapDimensions[1]-1], [mapDimensions[0]-1, mapDimensions[1]-1]]
     tick_time_ms = 1000
     foodMap = None
     tick_time_sec = (60) / (128)

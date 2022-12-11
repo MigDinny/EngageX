@@ -269,7 +269,7 @@ function create() {
             2,
         "YOU ENDED X PLACE",
         {
-            font: "15px Arial",
+            font: "20px Arial",
             align: "center",
             color: "#000000",
         }
