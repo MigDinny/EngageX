@@ -116,6 +116,7 @@ var sKey;
 var qKey;
 var wKey;
 var eKey;
+var rKey;
 
 var bpm;
 var timerMovement;
@@ -221,7 +222,7 @@ function create() {
     qKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
     wKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     eKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-
+    rKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
     drawMap(this, map_array);
 
     /** ANIMATIONS  */
@@ -431,6 +432,9 @@ function update(time, delta) {
                         .play(sound_effect_config);
                     sound_effect_played = true;
                 }
+            } else if (Phaser.Input.Keyboard.JustDown(rKey)) {
+                let msg = {type: "input", action: "FG"}
+                sendMessage(socket, msg);
             }
 
             if (Phaser.Input.Keyboard.JustDown(muteKey)) {
