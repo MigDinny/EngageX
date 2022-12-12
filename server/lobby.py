@@ -187,7 +187,7 @@ class Lobby:
             if self.players[i].id == playerID:
                 continue
             
-            if self.players[i].x == self.players[playerID].x and self.players[i].y == self.players[playerID].y:
+            if abs(self.players[playerID].x - self.players[i].x) < 2 and abs(self.players[playerID].y - self.players[i].y) < 2:
                 self.players[i].hp -= 20
                 if self.players[i].hp < 0:
                     self.players[i].hp = 0
