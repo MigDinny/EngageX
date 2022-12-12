@@ -88,7 +88,9 @@ class Lobby:
                         pass
                     case 'XP':
                         self.__saveXP__(clientID)
-            
+                    case 'FG':
+                        self.__fight__(clientID)           
+
             case "start":
                 if (self.gameStarted):
                     #Vai causar problemas com testers
@@ -129,8 +131,8 @@ class Lobby:
             self.players[id].xp = self.maxXP
 
             self.gameEnded = True
-            print(self.players)
-            #TODO SEND ENDGAME PACKET
+           
+            
 
     # Player harvest current cell. Gains 30 hp (for now)
     def __harvest__(self, id):
@@ -178,7 +180,27 @@ class Lobby:
                     food_arr[line][col] = self.foodMap[y_pos][x_pos]
 
         return food_arr
-        
+    
+    def __fight__(self, playerID):
+
+        for i in self.players:
+            if self.players[i].id == playerID:
+                continue
+            
+            if self.players[i].x == self.players[playerID].x and self.players[i].y == self.players[playerID].y:
+                self.players[i].hp -= 20
+                if self.players[i].hp < 0:
+                    self.players[i].hp = 0
+                    self.players[playerID].xp += 50
+
+            
+                self.players[playerID].xp += 10
+
+                if self.players[playerID].xp > self.maxXP:
+                    self.players[playerID].xp  = self.maxXP
+                    self.gameEnded = True
+
+
     # updates game state every TICK-time
     def __run__(self):
         self.gameStarted = True
