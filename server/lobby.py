@@ -22,8 +22,8 @@ class Player:
 class Lobby:
 
     # Game constants
-    board_width = 40
-    board_height = 20
+    board_width = 30
+    board_height = 15
     vision_range = 3
     mapDimensions = [board_width, board_height] # 40 columns, 20 rows
     initial_player_positions = [[0,0], [mapDimensions[0]-1, 0], [0, mapDimensions[1]-1], [mapDimensions[0]-1, mapDimensions[1]-1]]
@@ -91,7 +91,8 @@ class Lobby:
             
             case "start":
                 if (self.gameStarted):
-                    self.endTick = True
+                    #Vai causar problemas com testers
+                    #self.endTick = True
                     return
                 
                 players_list = []
