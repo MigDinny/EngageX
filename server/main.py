@@ -51,7 +51,6 @@ async def send_to_users(ids, message, all=False):
 
 async def main():
     ip = socket.gethostbyname(socket.gethostname())
-    #ip = "192.168.137.1"
     print("Serving websocket server at " + ip + ":8080")
     async with websockets.serve(handler, ip, 8080):
         await asyncio.Future()  # run forever
