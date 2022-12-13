@@ -1,5 +1,5 @@
 // GAME constants
-export const MAX_XP = 250;
+export const MAX_XP = 500;
 export const VISION_RANGE = 3;
 
 // UI constants

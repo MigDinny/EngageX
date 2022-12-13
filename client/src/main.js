@@ -208,6 +208,11 @@ function preload() {
         "audio/sound_effects/move.ogg",
     ]);
 
+    this.load.audio("punch_sound_effect", [
+        "audio/sound_effects/punch.mp3",
+        "audio/sound_effects/punch.ogg",
+    ]);
+
     load(this);
 }
 
@@ -435,6 +440,13 @@ function update(time, delta) {
             } else if (Phaser.Input.Keyboard.JustDown(rKey)) {
                 let msg = {type: "input", action: "FG"}
                 sendMessage(socket, msg);
+
+                if (!sound_effect_played) {
+                    this.sound
+                        .add("punch_sound_effect")
+                        .play(sound_effect_config);
+                    sound_effect_played = true;
+                }
             }
 
             if (Phaser.Input.Keyboard.JustDown(muteKey)) {

@@ -43,7 +43,7 @@ class Lobby:
     gameEnded = False
     gameStarted = False
     endTick = False
-    maxXP = 250
+    maxXP = 500
 
     ## CONSTRUCTOR
     def __init__(self, sender_function):
