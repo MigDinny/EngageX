@@ -126,6 +126,7 @@ var windowKeySize = 200;
 
 var direction = "";
 var action = "";
+var deadAnimationPlayed = new Array(4).fill(false);
 
 
 var gameOverText;
@@ -162,7 +163,7 @@ const socket = new WebSocket("ws://" + ipAddress + ":" + port);
 socket.onmessage = (event) => {
     var response = interpretMessage(this, gameState, socket, event.data);
 
-    console.log(gameState);
+    //console.log(gameState);
 };
 
 /**
@@ -252,6 +253,14 @@ function create() {
 
         frameRate: 10,
         frames: this.anims.generateFrameNumbers("slime", { start: 7, end: 12 }),
+        repeat: 0,
+    });
+
+    this.anims.create({
+        key: "dead",
+
+        frameRate: 10,
+        frames: this.anims.generateFrameNumbers("slime", { start: 28, end: 32 }),
         repeat: 0,
     });
 
@@ -467,6 +476,17 @@ function update(time, delta) {
     if (gameState.started && firstTick) {
         music.resume();
         firstTick = false;
+    }
+
+    // play animations of dead players
+    if(gameState.started) {
+        for (var i = 0; i < gameState.players.length; i++) {
+            if(gameState.players[i].hp == 0 && !deadAnimationPlayed[i]) {
+                deadAnimationPlayed[i] = true;
+                playerObjects[i].anims.pause();
+                playerObjects[i].anims.play('dead');
+            }
+        }
     }
 
     if(gameState.ended){
